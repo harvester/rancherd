@@ -156,8 +156,35 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		}
 	}
 
-	if err := p.addInstruction(rancher.ToWaitSUCInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
+	// Above Rancher v2.10.x, we should patch system-upgrade-controller with meta.helm.sh/release-name:mcc-local-managed-system-upgrade-controller to continue cluster intialization.
+	if semver.Compare(cfg.RancherVersion, "v2.10.0") >= 0 {
+		if err := p.addInstruction(rancher.ToWaitMccLocalManagedSystemUpgradeControllerInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToPatchSUCServiceAccountInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToPatchSUCClusterRoleBindingInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToPatchSUCConfigMapInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToPatchSUCDeploymentInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToDeleteSUCInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToWaitSUCInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToRestartRancherInstruction(k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToWaitRancherInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
+			return err
+		}
 	}
 
 	if err := p.addInstruction(rancher.ToWaitSUCPlanInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {

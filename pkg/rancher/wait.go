@@ -52,6 +52,104 @@ func ToWaitSUCInstruction(_, _, k8sVersion string) (*applyinator.Instruction, er
 	}, nil
 }
 
+func ToWaitMccLocalManagedSystemUpgradeControllerInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "wait-system-upgrade-controller",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "-n", "fleet-local", "get", "bundle", "mcc-local-managed-system-upgrade-controller"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
+func ToPatchSUCServiceAccountInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "patch-system-upgrade-controller-serviceaccount",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "annotate", "--overwrite", "serviceaccount", "-n", "cattle-system", "system-upgrade-controller", "meta.helm.sh/release-name=mcc-local-managed-system-upgrade-controller"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
+func ToPatchSUCConfigMapInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "patch-system-upgrade-controller-configmap",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "annotate", "--overwrite", "configmap", "-n", "cattle-system", "system-upgrade-controller-config", "meta.helm.sh/release-name=mcc-local-managed-system-upgrade-controller"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
+func ToPatchSUCClusterRoleBindingInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "patch-system-upgrade-controller-clusterrolebinding",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "annotate", "--overwrite", "clusterrolebinding", "-n", "cattle-system", "system-upgrade-controller", "meta.helm.sh/release-name=mcc-local-managed-system-upgrade-controller"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
+func ToPatchSUCDeploymentInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "patch-system-upgrade-controller-deployment",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "annotate", "--overwrite", "deployment", "-n", "cattle-system", "system-upgrade-controller", "meta.helm.sh/release-name=mcc-local-managed-system-upgrade-controller"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
+func ToDeleteSUCInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "delete-mcc-local-managed-system-upgrade-controller-bundle",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "delete", "bundle", "-n", "fleet-local", "mcc-local-managed-system-upgrade-controller"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
+func ToRestartRancherInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "restart-rancher-deployment",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "rollout", "restart", "-n", "cattle-system", "deployment/rancher"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
 func ToWaitSUCPlanInstruction(_, _, k8sVersion string) (*applyinator.Instruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
