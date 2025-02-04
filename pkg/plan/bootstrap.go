@@ -139,15 +139,16 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		}
 	}
 
-	if err := p.addInstruction(resources.ToInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, dataDir)); err != nil {
-		return err
-	}
-
-	// currently instruction is needed for version above v2.8.x
+	// Patch local provisioning cluster status before installing bootstrap resources,
+	// so bundles can be created first and managed charts can be installed smoothly.
 	if semver.Compare(cfg.RancherVersion, "v2.8.0") >= 0 {
 		if err := p.addInstruction(rancher.PatchLocalProvisioningClusterStatus(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
 			return err
 		}
+	}
+
+	if err := p.addInstruction(resources.ToInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, dataDir)); err != nil {
+		return err
 	}
 
 	if semver.Compare(cfg.RancherVersion, "v2.9.0") >= 0 {
