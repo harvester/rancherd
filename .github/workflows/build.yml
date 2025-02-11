@@ -10,18 +10,13 @@ jobs:
   build:
     name: Build images
     runs-on: ubuntu-latest
-    container:
-      image: rancher/dapper:v0.6.0
     steps:
-    # Git is not in Dapper container image. Add it manually for dirty check.
-    - name: Add Git
-      run: apk add -U git
     - name: Checkout code
       uses: actions/checkout@v4
 
     # Build binaries and SHA files
-    - name: Run dapper ci
-      run: dapper ci
+    - name: Run make ci
+      run: make ci
 
     - name: Release
       if: startsWith(github.ref, 'refs/tags/')
