@@ -167,3 +167,17 @@ func PatchLocalProvisioningClusterStatus(_, _, k8sVersion string) (*applyinator.
 		Command:    cmd,
 	}, nil
 }
+
+func ToPatchAgentTLSModeSetting(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "patch-agent-tls-mode-setting",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "patch", "setting.management.cattle.io", "agent-tls-mode", "--type=merge", "--patch", "{\"value\":\"system-store\"}"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}

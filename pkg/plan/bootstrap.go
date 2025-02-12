@@ -137,6 +137,10 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		if err := p.addInstruction(rancher.ToDeleteRancherWebhookValidationConfiguration(k8sVersion)); err != nil {
 			return err
 		}
+		// Rancher v2.9.x adds agent-tls-mode setting. Default value is "stricit". Change to "system-store" to avoid join node error.
+		if err := p.addInstruction(rancher.ToPatchAgentTLSModeSetting(k8sVersion)); err != nil {
+			return err
+		}
 	}
 
 	// Patch local provisioning cluster status before installing bootstrap resources,
