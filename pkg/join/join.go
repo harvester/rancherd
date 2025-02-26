@@ -59,6 +59,10 @@ func ToInstruction(config *config.Config, dataDir string) (*applyinator.Instruct
 	env = addEnv(env, "CATTLE_ROLE_CONTROLPLANE", fmt.Sprint(controlPlane))
 	env = addEnv(env, "CATTLE_ROLE_WORKER", fmt.Sprint(worker))
 
+	if config.NodeName != "" {
+		env = addEnv(env, "CATTLE_NODE_NAME", config.NodeName)
+	}
+
 	return &applyinator.Instruction{
 		Name:       "join",
 		SaveOutput: true,
