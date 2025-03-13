@@ -152,6 +152,20 @@ func ToRestartRancherWebhookInstruction(k8sVersion string) (*applyinator.Instruc
 	}, nil
 }
 
+func ToCreateStvAggregationSecret(k8sVersion string) (*applyinator.Instruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	return &applyinator.Instruction{
+		Name:       "create-stv-aggregation-secret",
+		SaveOutput: true,
+		Args:       []string{"retry", kubectl.Command(k8sVersion), "create", "secret", "generic", "-n", "cattle-system", "stv-aggregation"},
+		Env:        kubectl.Env(k8sVersion),
+		Command:    cmd,
+	}, nil
+}
+
 // Needs to patch status subresource
 // k patch cluster.provisioning local -n fleet-local --subresource=status --type=merge --patch '{"status":{"fleetWorkspaceName": "fleet-local"}}'
 func PatchLocalProvisioningClusterStatus(_, _, k8sVersion string) (*applyinator.Instruction, error) {

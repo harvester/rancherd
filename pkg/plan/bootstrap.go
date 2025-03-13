@@ -172,6 +172,15 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		return err
 	}
 
+	// Rancher added stv-aggregation secret to system-agent-upgrader plan from v2.11.0.
+	// We need to create the secret to make the plan ready.
+	// https://github.com/rancher/rancher/commit/235c2c6a495743dfecafe40b5440fc96b67e2b43
+	if semver.Compare(cfg.RancherVersion, "v2.11.0-alpha") >= 0 {
+		if err := p.addInstruction(rancher.ToCreateStvAggregationSecret(k8sVersion)); err != nil {
+			return err
+		}
+	}
+
 	if err := p.addInstruction(rancher.ToWaitSUCPlanInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
 		return err
 	}
