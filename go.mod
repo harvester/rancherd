@@ -1,6 +1,6 @@
 module github.com/rancher/rancherd
 
-go 1.23.4
+go 1.24.5
 
 replace (
 	k8s.io/api => k8s.io/api v0.24.10
