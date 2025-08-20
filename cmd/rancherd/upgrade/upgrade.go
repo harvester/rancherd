@@ -2,21 +2,30 @@ package upgrade
 
 import (
 	"github.com/rancher/rancherd/pkg/rancherd"
-	cli "github.com/rancher/wrangler-cli"
 	"github.com/spf13/cobra"
 )
 
 func NewUpgrade() *cobra.Command {
-	return cli.Command(&Upgrade{}, cobra.Command{
+	u := &Upgrade{}
+	cmd := &cobra.Command{
+		Use:   "upgrade",
 		Short: "Upgrade Rancher and Kubernetes",
-	})
+		RunE:  u.Run,
+	}
+
+	cmd.Flags().StringVarP(&u.RancherVersion, "rancher-version", "r", "stable", "Target Rancher version")
+	cmd.Flags().StringVarP(&u.RancherOSVersion, "rancher-os-version", "o", "latest", "Target RancherOS version")
+	cmd.Flags().StringVarP(&u.KubernetesVersion, "kubernetes-version", "k", "stable", "Target Kubernetes version")
+	cmd.Flags().BoolVarP(&u.Force, "force", "f", false, "Run without prompting for confirmation")
+
+	return cmd
 }
 
 type Upgrade struct {
-	RancherVersion    string `usage:"Target Rancher version" short:"r" default:"stable"`
-	RancherOSVersion  string `usage:"Target RancherOS version" short:"o" default:"latest" name:"rancher-os-version"`
-	KubernetesVersion string `usage:"Target Kubernetes version" short:"k" default:"stable"`
-	Force             bool   `usage:"Run without prompting for confirmation" short:"f"`
+	RancherVersion    string
+	RancherOSVersion  string
+	KubernetesVersion string
+	Force             bool
 }
 
 func (b *Upgrade) Run(cmd *cobra.Command, _ []string) error {

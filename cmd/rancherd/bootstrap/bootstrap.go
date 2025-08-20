@@ -2,20 +2,24 @@ package bootstrap
 
 import (
 	"github.com/rancher/rancherd/pkg/rancherd"
-	cli "github.com/rancher/wrangler-cli"
 	"github.com/spf13/cobra"
 )
 
 func NewBootstrap() *cobra.Command {
-	return cli.Command(&Bootstrap{}, cobra.Command{
+	b := &Bootstrap{}
+	cmd := &cobra.Command{
+		Use:   "bootstrap",
 		Short: "Run Rancher and Kubernetes bootstrap",
-	})
+		RunE:  b.Run,
+	}
+
+	cmd.Flags().BoolVarP(&b.Force, "force", "f", false, "Run bootstrap even if already bootstrapped")
+
+	return cmd
 }
 
 type Bootstrap struct {
-	Force bool `usage:"Run bootstrap even if already bootstrapped" short:"f"`
-	//DataDir string `usage:"Path to rancherd state" default:"/var/lib/rancher/rancherd"`
-	//Config string `usage:"Custom config path" default:"/etc/rancher/rancherd/config.yaml" short:"c"`
+	Force bool
 }
 
 func (b *Bootstrap) Run(cmd *cobra.Command, _ []string) error {

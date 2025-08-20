@@ -1,20 +1,28 @@
 package updateclientsecret
 
 import (
-	cli "github.com/rancher/wrangler-cli"
+	"os"
+
 	"github.com/spf13/cobra"
 
 	"github.com/rancher/rancherd/pkg/rancher"
 )
 
 func NewUpdateClientSecret() *cobra.Command {
-	return cli.Command(&UpdateClientSecret{}, cobra.Command{
+	u := &UpdateClientSecret{}
+	cmd := &cobra.Command{
+		Use:   "update-client-secret",
 		Short: "Update cluster client secret to have API Server URL and CA Certs configured",
-	})
+		RunE:  u.Run,
+	}
+
+	cmd.Flags().StringVar(&u.Kubeconfig, "kubeconfig", os.Getenv("KUBECONFIG"), "Kubeconfig file")
+
+	return cmd
 }
 
 type UpdateClientSecret struct {
-	Kubeconfig string `usage:"Kubeconfig file" env:"KUBECONFIG"`
+	Kubeconfig string
 }
 
 func (s *UpdateClientSecret) Run(cmd *cobra.Command, _ []string) error {

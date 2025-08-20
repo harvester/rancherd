@@ -2,20 +2,27 @@ package gettoken
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/rancher/rancherd/pkg/token"
-	cli "github.com/rancher/wrangler-cli"
 	"github.com/spf13/cobra"
 )
 
 func NewGetToken() *cobra.Command {
-	return cli.Command(&GetToken{}, cobra.Command{
+	g := &GetToken{}
+	cmd := &cobra.Command{
+		Use:   "get-token",
 		Short: "Print token to join nodes to the cluster",
-	})
+		RunE:  g.Run,
+	}
+
+	cmd.Flags().StringVar(&g.Kubeconfig, "kubeconfig", os.Getenv("KUBECONFIG"), "Kubeconfig file")
+
+	return cmd
 }
 
 type GetToken struct {
-	Kubeconfig string `usage:"Kubeconfig file" env:"KUBECONFIG"`
+	Kubeconfig string
 }
 
 func (p *GetToken) Run(cmd *cobra.Command, _ []string) error {

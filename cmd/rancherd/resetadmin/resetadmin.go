@@ -1,21 +1,31 @@
 package resetadmin
 
 import (
+	"os"
+
 	"github.com/rancher/rancherd/pkg/auth"
-	cli "github.com/rancher/wrangler-cli"
 	"github.com/spf13/cobra"
 )
 
 func NewResetAdmin() *cobra.Command {
-	return cli.Command(&ResetAdmin{}, cobra.Command{
+	r := &ResetAdmin{}
+	cmd := &cobra.Command{
+		Use:   "reset-admin",
 		Short: "Bootstrap and reset admin password",
-	})
+		RunE:  r.Run,
+	}
+
+	cmd.Flags().StringVar(&r.Password, "password", os.Getenv("PASSWORD"), "Password for Rancher login")
+	cmd.Flags().StringVar(&r.PasswordFile, "password-file", os.Getenv("PASSWORD_FILE"), "Password for Rancher login, from file")
+	cmd.Flags().StringVar(&r.Kubeconfig, "kubeconfig", os.Getenv("KUBECONFIG"), "Kubeconfig file")
+
+	return cmd
 }
 
 type ResetAdmin struct {
-	Password     string `usage:"Password for Rancher login" env:"PASSWORD"`
-	PasswordFile string `usage:"Password for Rancher login, from file" env:"PASSWORD_FILE"`
-	Kubeconfig   string `usage:"Kubeconfig file" env:"KUBECONFIG"`
+	Password     string
+	PasswordFile string
+	Kubeconfig   string
 }
 
 func (p *ResetAdmin) Run(cmd *cobra.Command, _ []string) error {
