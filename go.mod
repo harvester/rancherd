@@ -42,7 +42,6 @@ require (
 	github.com/rancher/system-agent v0.0.1-alpha30
 	github.com/rancher/wharfie v0.3.2
 	github.com/rancher/wrangler v0.8.6-0.20210819203859-0babd42fbad8
-	github.com/rancher/wrangler-cli v0.0.0-20210217230406-95cfa275f52f
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/crypto v0.14.0
@@ -165,7 +164,6 @@ require (
 	k8s.io/apiextensions-apiserver v0.28.3 // indirect
 	k8s.io/apiserver v0.28.3 // indirect
 	k8s.io/component-base v0.28.3 // indirect
-	k8s.io/klog v1.0.0 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/kubelet v0.0.0 // indirect

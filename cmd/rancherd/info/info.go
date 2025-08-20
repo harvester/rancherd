@@ -2,14 +2,18 @@ package info
 
 import (
 	"github.com/rancher/rancherd/pkg/rancherd"
-	cli "github.com/rancher/wrangler-cli"
 	"github.com/spf13/cobra"
 )
 
 func NewInfo() *cobra.Command {
-	return cli.Command(&Info{}, cobra.Command{
+	i := &Info{}
+	cmd := &cobra.Command{
+		Use:   "info",
 		Short: "Print installation versions",
-	})
+		RunE:  i.Run,
+	}
+
+	return cmd
 }
 
 type Info struct {

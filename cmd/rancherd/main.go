@@ -1,7 +1,8 @@
 package main
 
 import (
-	cli "github.com/rancher/wrangler-cli"
+	"os"
+
 	"github.com/spf13/cobra"
 
 	"github.com/rancher/rancherd/cmd/rancherd/bootstrap"
@@ -15,17 +16,15 @@ import (
 	"github.com/rancher/rancherd/cmd/rancherd/upgrade"
 )
 
-type Rancherd struct {
-}
-
-func (a *Rancherd) Run(cmd *cobra.Command, _ []string) error {
-	return cmd.Help()
-}
-
 func main() {
-	root := cli.Command(&Rancherd{}, cobra.Command{
+	root := &cobra.Command{
+		Use:  "rancherd",
 		Long: "Bootstrap Rancher and k3s/rke2 on a node",
-	})
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return cmd.Help()
+		},
+	}
+
 	root.AddCommand(
 		bootstrap.NewBootstrap(),
 		gettoken.NewGetToken(),
@@ -37,5 +36,8 @@ func main() {
 		gettpmhash.NewGetTPMHash(),
 		updateclientsecret.NewUpdateClientSecret(),
 	)
-	cli.Main(root)
+
+	if err := root.Execute(); err != nil {
+		os.Exit(1)
+	}
 }

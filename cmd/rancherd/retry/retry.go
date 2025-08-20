@@ -4,20 +4,26 @@ import (
 	"time"
 
 	"github.com/rancher/rancherd/pkg/retry"
-	cli "github.com/rancher/wrangler-cli"
 	"github.com/spf13/cobra"
 )
 
 func NewRetry() *cobra.Command {
-	return cli.Command(&Retry{}, cobra.Command{
+	r := &Retry{}
+	cmd := &cobra.Command{
+		Use:                "retry",
 		Short:              "Retry command until it succeeds",
 		DisableFlagParsing: true,
 		Hidden:             true,
-	})
+		RunE:               r.Run,
+	}
+
+	cmd.Flags().BoolVar(&r.SleepFirst, "sleep-first", false, "Sleep 5 seconds before running command")
+
+	return cmd
 }
 
 type Retry struct {
-	SleepFirst bool `usage:"Sleep 5 seconds before running command"`
+	SleepFirst bool
 }
 
 func (p *Retry) Run(cmd *cobra.Command, args []string) error {
