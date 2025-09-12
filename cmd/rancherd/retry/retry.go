@@ -3,7 +3,7 @@ package retry
 import (
 	"time"
 
-	"github.com/rancher/rancherd/pkg/retry"
+	"github.com/harvester/rancherd/pkg/retry"
 	"github.com/spf13/cobra"
 )
 

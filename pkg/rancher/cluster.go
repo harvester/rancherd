@@ -11,7 +11,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/rancher/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/kubectl"
 )
 
 const (

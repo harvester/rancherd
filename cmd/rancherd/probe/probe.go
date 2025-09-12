@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rancher/rancherd/pkg/probe"
+	"github.com/harvester/rancherd/pkg/probe"
 	"github.com/spf13/cobra"
 )
 

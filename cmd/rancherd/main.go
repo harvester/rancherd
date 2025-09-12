@@ -5,15 +5,15 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/rancher/rancherd/cmd/rancherd/bootstrap"
-	"github.com/rancher/rancherd/cmd/rancherd/gettoken"
-	"github.com/rancher/rancherd/cmd/rancherd/gettpmhash"
-	"github.com/rancher/rancherd/cmd/rancherd/info"
-	"github.com/rancher/rancherd/cmd/rancherd/probe"
-	"github.com/rancher/rancherd/cmd/rancherd/resetadmin"
-	"github.com/rancher/rancherd/cmd/rancherd/retry"
-	"github.com/rancher/rancherd/cmd/rancherd/updateclientsecret"
-	"github.com/rancher/rancherd/cmd/rancherd/upgrade"
+	"github.com/harvester/rancherd/cmd/rancherd/bootstrap"
+	"github.com/harvester/rancherd/cmd/rancherd/gettoken"
+	"github.com/harvester/rancherd/cmd/rancherd/gettpmhash"
+	"github.com/harvester/rancherd/cmd/rancherd/info"
+	"github.com/harvester/rancherd/cmd/rancherd/probe"
+	"github.com/harvester/rancherd/cmd/rancherd/resetadmin"
+	"github.com/harvester/rancherd/cmd/rancherd/retry"
+	"github.com/harvester/rancherd/cmd/rancherd/updateclientsecret"
+	"github.com/harvester/rancherd/cmd/rancherd/upgrade"
 )
 
 func main() {

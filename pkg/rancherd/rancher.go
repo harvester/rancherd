@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/plan"
-	"github.com/rancher/rancherd/pkg/version"
-	"github.com/rancher/rancherd/pkg/versions"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/plan"
+	"github.com/harvester/rancherd/pkg/version"
+	"github.com/harvester/rancherd/pkg/versions"
 	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/yaml"
 )

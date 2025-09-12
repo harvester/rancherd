@@ -7,17 +7,17 @@ import (
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"golang.org/x/mod/semver"
 
-	"github.com/rancher/rancherd/pkg/cacerts"
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/discovery"
-	"github.com/rancher/rancherd/pkg/join"
-	"github.com/rancher/rancherd/pkg/kubectl"
-	"github.com/rancher/rancherd/pkg/probe"
-	"github.com/rancher/rancherd/pkg/rancher"
-	"github.com/rancher/rancherd/pkg/registry"
-	"github.com/rancher/rancherd/pkg/resources"
-	"github.com/rancher/rancherd/pkg/runtime"
-	"github.com/rancher/rancherd/pkg/versions"
+	"github.com/harvester/rancherd/pkg/cacerts"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/discovery"
+	"github.com/harvester/rancherd/pkg/join"
+	"github.com/harvester/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/probe"
+	"github.com/harvester/rancherd/pkg/rancher"
+	"github.com/harvester/rancherd/pkg/registry"
+	"github.com/harvester/rancherd/pkg/resources"
+	"github.com/harvester/rancherd/pkg/runtime"
+	"github.com/harvester/rancherd/pkg/versions"
 )
 
 type plan applyinator.Plan

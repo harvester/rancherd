@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/images"
-	"github.com/rancher/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/images"
+	"github.com/harvester/rancherd/pkg/kubectl"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wrangler/pkg/data"
 	"sigs.k8s.io/yaml"

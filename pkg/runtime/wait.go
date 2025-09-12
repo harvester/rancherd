@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rancher/rancherd/pkg/kubectl"
-	"github.com/rancher/rancherd/pkg/self"
+	"github.com/harvester/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/self"
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
 

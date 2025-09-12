@@ -4,9 +4,9 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/runtime"
-	"github.com/rancher/rancherd/pkg/versions"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/runtime"
+	"github.com/harvester/rancherd/pkg/versions"
 	"github.com/rancher/wrangler/pkg/data/convert"
 	"github.com/rancher/wrangler/pkg/randomtoken"
 	"github.com/rancher/wrangler/pkg/yaml"

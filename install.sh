@@ -42,7 +42,7 @@ set -o noglob
 #     Directory to install systemd service and environment files to, or use
 #     /etc/systemd/system as the default
 #
-GITHUB_URL=https://github.com/rancher/rancherd/releases
+GITHUB_URL=https://github.com/harvester/rancherd/releases
 DOWNLOADER=
 
 # --- helper functions for logs ---
@@ -350,7 +350,7 @@ create_systemd_service_file() {
     $SUDO tee ${FILE_RANCHERD_SERVICE} >/dev/null << EOF
 [Unit]
 Description=Rancher Bootstrap
-Documentation=https://github.com/rancher/rancherd
+Documentation=https://github.com/harvester/rancherd
 Wants=network-online.target
 After=network-online.target
 

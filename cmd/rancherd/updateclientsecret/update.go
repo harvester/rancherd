@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/rancher/rancherd/pkg/rancher"
+	"github.com/harvester/rancherd/pkg/rancher"
 )
 
 func NewUpdateClientSecret() *cobra.Command {

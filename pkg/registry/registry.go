@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/rancher/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/config"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wharfie/pkg/registries"
 	"sigs.k8s.io/yaml"

@@ -24,7 +24,7 @@ cat > /etc/rancher/rancherd/config.yaml << EOF
 role: cluster-init
 token: somethingrandom
 EOF
-curl -fL https://raw.githubusercontent.com/rancher/rancherd/master/install.sh | sh -
+curl -fL https://raw.githubusercontent.com/harvester/rancherd/master/install.sh | sh -
 ```
 
 On `server2`
@@ -35,7 +35,7 @@ role: server
 server: https://server1:8443
 token: somethingrandom
 EOF
-curl -fL https://raw.githubusercontent.com/rancher/rancherd/master/install.sh | sh -
+curl -fL https://raw.githubusercontent.com/harvester/rancherd/master/install.sh | sh -
 ```
 
 On `server3`
@@ -46,7 +46,7 @@ role: server
 server: https://server1:8443
 token: somethingrandom
 EOF
-curl -fL https://raw.githubusercontent.com/rancher/rancherd/master/install.sh | sh -
+curl -fL https://raw.githubusercontent.com/harvester/rancherd/master/install.sh | sh -
 ```
 
 ## Installation
@@ -63,12 +63,12 @@ be embedded in the `rancherd` key in the cloud-config.
 rancherd:
   role: cluster-init
 runcmd:
-  - curl -fL https://raw.githubusercontent.com/rancher/rancherd/master/install.sh | sh -
+  - curl -fL https://raw.githubusercontent.com/harvester/rancherd/master/install.sh | sh -
 ```
 
 ### Manual
 
-`rancherd` binary can be downloaded from https://github.com/rancher/rancherd/releases/latest
+`rancherd` binary can be downloaded from https://github.com/harvester/rancherd/releases/latest
 and manually ran.
 
 ### Curl script (systemd installation)
@@ -76,9 +76,9 @@ and manually ran.
 The below command will download `rancherd` binary and setup a systemd unit and run it.
 
 ```bash
-curl -sfL https://raw.githubusercontent.com/rancher/rancherd/master/install.sh | sh -
+curl -sfL https://raw.githubusercontent.com/harvester/rancherd/master/install.sh | sh -
 ```
- 
+
 ## Cluster Initialization
 
 Creating a cluster always starts with one node initializing the cluster, by
@@ -123,10 +123,10 @@ discovery:
   params:
     # Corresponds to go-discover provider name
     provider: "mdns"
-    # All other key/values are parameters corresponding to what 
+    # All other key/values are parameters corresponding to what
     # the go-discover provider is expecting
     service: "rancher-server"
-  # If this is a new cluster it will wait until 3 server are 
+  # If this is a new cluster it will wait until 3 server are
   # available and they all agree on the same cluster-init node
   expectedServers: 3
   # How long servers are remembered for. It is useful for providers
@@ -138,7 +138,7 @@ More information on how to use the discovery is in the config examples.
 ## Configuration
 
 Configuration for rancherd goes in `/etc/rancher/rancherd/config.yaml`.  A full
-example configuration with documentation is available in 
+example configuration with documentation is available in
 [config-example.yaml](./config-example.yaml).
 
 Minimal configuration
@@ -198,7 +198,7 @@ hostPort: 8443
 # Accessing ingress is disabled by default.
 ingress:
   enabled: false
-  
+
 # Don't create a default admin password
 noDefaultAdmin: true
 
@@ -234,10 +234,10 @@ rancherValues:
 
 rancherd itself doesn't need to be upgraded. It is only ran once per node
 and then after that provides no value.  What you do need to upgrade after
-the fact is Rancher and Kubernetes. 
+the fact is Rancher and Kubernetes.
 
 ### Rancher
-Rancher is installed as a helm chart following the standard procedure. You can upgrade 
+Rancher is installed as a helm chart following the standard procedure. You can upgrade
 Rancher with the standard procedure documented at
 https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/upgrades/.
 
