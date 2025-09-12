@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rancher/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/config"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wrangler/pkg/data/convert"
 	"sigs.k8s.io/yaml"

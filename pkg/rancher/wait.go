@@ -6,8 +6,8 @@ import (
 
 	"github.com/rancher/system-agent/pkg/applyinator"
 
-	"github.com/rancher/rancherd/pkg/kubectl"
-	"github.com/rancher/rancherd/pkg/self"
+	"github.com/harvester/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/self"
 )
 
 func ToWaitRancherInstruction(_, _, k8sVersion string) (*applyinator.Instruction, error) {

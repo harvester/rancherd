@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rancher/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/config"
 )
 
 const (

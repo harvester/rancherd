@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/harvester/rancherd/pkg/kubectl"
 	"github.com/pkg/errors"
-	"github.com/rancher/rancherd/pkg/kubectl"
 	"github.com/rancher/wrangler/pkg/randomtoken"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"

@@ -3,7 +3,7 @@ package resetadmin
 import (
 	"os"
 
-	"github.com/rancher/rancherd/pkg/auth"
+	"github.com/harvester/rancherd/pkg/auth"
 	"github.com/spf13/cobra"
 )
 

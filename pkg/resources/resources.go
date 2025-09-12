@@ -16,11 +16,11 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/images"
-	"github.com/rancher/rancherd/pkg/kubectl"
-	"github.com/rancher/rancherd/pkg/self"
-	"github.com/rancher/rancherd/pkg/versions"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/images"
+	"github.com/harvester/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/self"
+	"github.com/harvester/rancherd/pkg/versions"
 )
 
 const (

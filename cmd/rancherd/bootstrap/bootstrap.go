@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/rancher/rancherd/pkg/rancherd"
+	"github.com/harvester/rancherd/pkg/rancherd"
 	"github.com/spf13/cobra"
 )
 

@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/rancher/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/kubectl"
 	data2 "github.com/rancher/wrangler/pkg/data"
 	"github.com/rancher/wrangler/pkg/data/convert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -1,6 +1,6 @@
 [Unit]
 Description=Rancher Bootstrap
-Documentation=https://github.com/rancher/rancherd
+Documentation=https://github.com/harvester/rancherd
 Wants=network-online.target
 After=network-online.target
 

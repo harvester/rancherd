@@ -9,9 +9,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/registry"
-	"github.com/rancher/rancherd/pkg/versions"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/registry"
+	"github.com/harvester/rancherd/pkg/versions"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/system-agent/pkg/image"
 	"github.com/sirupsen/logrus"

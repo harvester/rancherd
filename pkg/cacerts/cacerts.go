@@ -14,7 +14,7 @@ import (
 	url2 "net/url"
 	"time"
 
-	"github.com/rancher/rancherd/pkg/tpm"
+	"github.com/harvester/rancherd/pkg/tpm"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wrangler/pkg/randomtoken"
 )

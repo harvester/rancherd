@@ -1,4 +1,4 @@
-module github.com/rancher/rancherd
+module github.com/harvester/rancherd
 
 go 1.24.5
 

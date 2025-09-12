@@ -1,10 +1,10 @@
 package plan
 
 import (
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/os"
-	"github.com/rancher/rancherd/pkg/rancher"
-	"github.com/rancher/rancherd/pkg/runtime"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/os"
+	"github.com/harvester/rancherd/pkg/rancher"
+	"github.com/harvester/rancherd/pkg/runtime"
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
 

@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/roles"
-	"github.com/rancher/rancherd/pkg/self"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/roles"
+	"github.com/harvester/rancherd/pkg/self"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/system-agent/pkg/prober"
 )

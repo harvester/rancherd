@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rancher/rancherd/pkg/cacerts"
-	"github.com/rancher/rancherd/pkg/config"
-	"github.com/rancher/rancherd/pkg/roles"
+	"github.com/harvester/rancherd/pkg/cacerts"
+	"github.com/harvester/rancherd/pkg/config"
+	"github.com/harvester/rancherd/pkg/roles"
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
 

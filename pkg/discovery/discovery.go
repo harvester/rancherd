@@ -14,8 +14,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/harvester/rancherd/pkg/config"
 	"github.com/hashicorp/go-discover"
-	"github.com/rancher/rancherd/pkg/config"
 	"github.com/rancher/wrangler/pkg/data/convert"
 	"github.com/rancher/wrangler/pkg/randomtoken"
 	"github.com/rancher/wrangler/pkg/slice"

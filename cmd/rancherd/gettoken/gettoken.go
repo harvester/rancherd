@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rancher/rancherd/pkg/token"
+	"github.com/harvester/rancherd/pkg/token"
 	"github.com/spf13/cobra"
 )
 
