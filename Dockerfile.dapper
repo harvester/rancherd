@@ -1,4 +1,4 @@
-FROM registry.suse.com/bci/golang:1.24
+FROM registry.suse.com/bci/golang:1.25
 
 RUN zypper in -y bash git gcc docker vim less file curl wget ca-certificates trousers-devel
 
