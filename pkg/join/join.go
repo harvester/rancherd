@@ -31,7 +31,7 @@ func ToScriptFile(config *config.Config, dataDir string) (*applyinator.File, err
 	}, nil
 }
 
-func ToInstruction(config *config.Config, dataDir string) (*applyinator.Instruction, error) {
+func ToInstruction(config *config.Config, dataDir string) (*applyinator.OneTimeInstruction, error) {
 	var (
 		etcd         = roles.IsEtcd(config.Role)
 		controlPlane = roles.IsControlPlane(config.Role)
@@ -63,13 +63,13 @@ func ToInstruction(config *config.Config, dataDir string) (*applyinator.Instruct
 		env = addEnv(env, "CATTLE_NODE_NAME", config.NodeName)
 	}
 
-	return &applyinator.Instruction{
-		Name:       "join",
-		SaveOutput: true,
-		Env:        env,
-		Args: []string{
-			"sh", GetInstallScriptFile(dataDir),
-		},
-		Command: "/usr/bin/env",
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "join"
+	instruction.SaveOutput = true
+	instruction.Env = env
+	instruction.Args = []string{
+		"sh", GetInstallScriptFile(dataDir),
+	}
+	instruction.Command = "/usr/bin/env"
+	return instruction, nil
 }

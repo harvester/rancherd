@@ -10,7 +10,7 @@ import (
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
 
-func ToUpgradeInstruction(k8sVersion, rancherOSVersion string) (*applyinator.Instruction, error) {
+func ToUpgradeInstruction(k8sVersion, rancherOSVersion string) (*applyinator.OneTimeInstruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
@@ -23,11 +23,11 @@ func ToUpgradeInstruction(k8sVersion, rancherOSVersion string) (*applyinator.Ins
 	if err != nil {
 		return nil, err
 	}
-	return &applyinator.Instruction{
-		Name:       "patch-rancher-os-version",
-		SaveOutput: true,
-		Args:       []string{"retry", kubectl.Command(k8sVersion), "--type=merge", "-n", "fleet-local", "patch", "managedosimages.rancheros.cattle.io", "default-os-image", "-p", string(patch)},
-		Env:        kubectl.Env(k8sVersion),
-		Command:    cmd,
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "patch-rancher-os-version"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "--type=merge", "-n", "fleet-local", "patch", "managedosimages.rancheros.cattle.io", "default-os-image", "-p", string(patch)}
+	instruction.Env = kubectl.Env(k8sVersion)
+	instruction.Command = cmd
+	return instruction, nil
 }

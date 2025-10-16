@@ -162,14 +162,14 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 	return data, hashHex(data), nil
 }
 
-func ToUpdateCACertificatesInstruction() (*applyinator.Instruction, error) {
+func ToUpdateCACertificatesInstruction() (*applyinator.OneTimeInstruction, error) {
 	cmd := "update-ca-certificates"
 
-	return &applyinator.Instruction{
-		Name:       "update-ca-certificates",
-		SaveOutput: true,
-		Command:    cmd,
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "update-ca-certificates"
+	instruction.Command = cmd
+	instruction.SaveOutput = true
+	return instruction, nil
 }
 
 func ToFile(server, token string) (*applyinator.File, error) {

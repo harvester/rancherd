@@ -34,16 +34,18 @@ func RunWithKubernetesVersion(ctx context.Context, k8sVersion string, plan *appl
 
 	images := image.NewUtility("", "", "", registry.GetConfigFile(runtime))
 	apply := applyinator.NewApplyinator(filepath.Join(dataDir, "plan", "work"), false,
-		filepath.Join(dataDir, "plan", "applied"), images)
+		filepath.Join(dataDir, "plan", "applied"), filepath.Join(dataDir, "plan", "interlock"), images)
 
-	output, err := apply.Apply(ctx, applyinator.CalculatedPlan{
-		Plan: *plan,
+	output, err := apply.Apply(ctx, applyinator.ApplyInput{
+		CalculatedPlan: applyinator.CalculatedPlan{
+			Plan: *plan,
+		},
 	})
 	if err != nil {
 		return err
 	}
 
-	return saveOutput(output, dataDir)
+	return saveOutput(output.OneTimeOutput, dataDir)
 }
 
 func saveOutput(data []byte, dataDir string) error {

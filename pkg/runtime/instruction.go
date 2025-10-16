@@ -12,19 +12,19 @@ import (
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
 
-func ToInstruction(imageOverride string, systemDefaultRegistry string, k8sVersion string) (*applyinator.Instruction, error) {
+func ToInstruction(imageOverride string, systemDefaultRegistry string, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
 	runtime := config.GetRuntime(k8sVersion)
-	return &applyinator.Instruction{
-		Name: string(runtime),
-		Env: []string{
-			"RESTART_STAMP=" + images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion),
-		},
-		Image:      images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion),
-		SaveOutput: true,
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = string(runtime)
+	instruction.Env = []string{
+		"RESTART_STAMP=" + images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion),
+	}
+	instruction.Image = images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion)
+	instruction.SaveOutput = true
+	return instruction, nil
 }
 
-func ToUpgradeInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+func ToUpgradeInstruction(k8sVersion string) (*applyinator.OneTimeInstruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
@@ -37,11 +37,11 @@ func ToUpgradeInstruction(k8sVersion string) (*applyinator.Instruction, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &applyinator.Instruction{
-		Name:       "patch-kubernetes-version",
-		SaveOutput: true,
-		Args:       []string{"retry", kubectl.Command(k8sVersion), "--type=merge", "-n", "fleet-local", "patch", "clusters.provisioning.cattle.io", "local", "-p", string(patch)},
-		Env:        kubectl.Env(k8sVersion),
-		Command:    cmd,
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "patch-kubernetes-version"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "--type=merge", "-n", "fleet-local", "patch", "clusters.provisioning.cattle.io", "local", "-p", string(patch)}
+	instruction.Env = kubectl.Env(k8sVersion)
+	instruction.Command = cmd
+	return instruction, nil
 }

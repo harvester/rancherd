@@ -44,20 +44,20 @@ func ToFile(cfg *config.Config, dataDir string) (*applyinator.File, error) {
 	}, nil
 }
 
-func ToInstruction(imageOverride, systemDefaultRegistry, k8sVersion, rancherVersion, dataDir string) (*applyinator.Instruction, error) {
-	return &applyinator.Instruction{
-		Name:       "rancher",
-		SaveOutput: true,
-		Image:      images.GetRancherInstallerImage(imageOverride, systemDefaultRegistry, rancherVersion),
-		Env:        append(kubectl.Env(k8sVersion), fmt.Sprintf("RANCHER_VALUES=%s", GetRancherValues(dataDir))),
-	}, nil
+func ToInstruction(imageOverride, systemDefaultRegistry, k8sVersion, rancherVersion, dataDir string) (*applyinator.OneTimeInstruction, error) {
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "rancher"
+	instruction.SaveOutput = true
+	instruction.Image = images.GetRancherInstallerImage(imageOverride, systemDefaultRegistry, rancherVersion)
+	instruction.Env = append(kubectl.Env(k8sVersion), fmt.Sprintf("RANCHER_VALUES=%s", GetRancherValues(dataDir)))
+	return instruction, nil
 }
 
-func ToUpgradeInstruction(imageOverride, systemDefaultRegistry, k8sVersion, rancherVersion, _ string) (*applyinator.Instruction, error) {
-	return &applyinator.Instruction{
-		Name:       "rancher",
-		SaveOutput: true,
-		Image:      images.GetRancherInstallerImage(imageOverride, systemDefaultRegistry, rancherVersion),
-		Env:        kubectl.Env(k8sVersion),
-	}, nil
+func ToUpgradeInstruction(imageOverride, systemDefaultRegistry, k8sVersion, rancherVersion, _ string) (*applyinator.OneTimeInstruction, error) {
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "rancher"
+	instruction.SaveOutput = true
+	instruction.Image = images.GetRancherInstallerImage(imageOverride, systemDefaultRegistry, rancherVersion)
+	instruction.Env = kubectl.Env(k8sVersion)
+	return instruction, nil
 }

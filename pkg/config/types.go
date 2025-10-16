@@ -46,9 +46,9 @@ type Config struct {
 	Server            string           `json:"server,omitempty"`
 	Discovery         *DiscoveryConfig `json:"discovery,omitempty"`
 
-	RancherValues    map[string]interface{}    `json:"rancherValues,omitempty"`
-	PreInstructions  []applyinator.Instruction `json:"preInstructions,omitempty"`
-	PostInstructions []applyinator.Instruction `json:"postInstructions,omitempty"`
+	RancherValues    map[string]interface{}           `json:"rancherValues,omitempty"`
+	PreInstructions  []applyinator.OneTimeInstruction `json:"preInstructions,omitempty"`
+	PostInstructions []applyinator.OneTimeInstruction `json:"postInstructions,omitempty"`
 	// Deprecated, use Resources instead
 	BootstrapResources []v1.GenericMap `json:"bootstrapResources,omitempty"`
 	Resources          []v1.GenericMap `json:"resources,omitempty"`
