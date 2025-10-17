@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -154,8 +154,12 @@ func (j *joinServer) loop(ctx context.Context, count int, params map[string]stri
 			continue
 		}
 
-		data, err := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
+		data, err := io.ReadAll(resp.Body)
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				logrus.Errorf("failed to close response body: %v", err)
+			}
+		}()
 		if err != nil || resp.StatusCode != http.StatusOK {
 			logrus.Infof("failed to read response from %s: code %d: %v", url, resp.StatusCode, err)
 			allAgree = false
@@ -271,8 +275,12 @@ func newJoinServer(ctx context.Context, cacheDuration string, port int64) (*join
 	}()
 	go func() {
 		<-ctx.Done()
-		server.Shutdown(context.Background())
-		l.Close()
+		if err := server.Shutdown(context.Background()); err != nil {
+			logrus.Errorf("failed to shutdown bootstrap http server: %v", err)
+		}
+		if err := l.Close(); err != nil {
+			logrus.Errorf("failed to close bootstrap http server listener: %v", err)
+		}
 	}()
 
 	return j, nil

@@ -9,7 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	url2 "net/url"
 	"time"
@@ -17,6 +17,7 @@ import (
 	"github.com/harvester/rancherd/pkg/tpm"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wrangler/pkg/randomtoken"
+	"github.com/sirupsen/logrus"
 )
 
 var insecureClient = &http.Client{
@@ -98,7 +99,7 @@ func get(server, token, path string, clusterToken bool) ([]byte, string, error) 
 		}
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		return nil, "", fmt.Errorf("%s: %s", data, resp.Status)
 	}
@@ -122,9 +123,9 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 	}
 
 	if resp, err := http.Get(requestURL); err == nil {
-		_, _ = ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
-		return nil, "", nil
+		_, _ = io.ReadAll(resp.Body)
+		err = resp.Body.Close()
+		return nil, "", err
 	}
 
 	req, err := http.NewRequest(http.MethodGet, requestURL, nil)
@@ -138,9 +139,13 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 	if err != nil {
 		return nil, "", fmt.Errorf("insecure cacerts download from %s: %w", requestURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			logrus.Errorf("failed to close response body: %v", err)
+		}
+	}()
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, "", err
 	}

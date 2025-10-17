@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -54,14 +54,18 @@ func Get(cacerts []byte, url string, header http.Header) ([]byte, error) {
 	conn, resp, err := dialer.Dial(wsURL, header)
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusUnauthorized {
-			data, err := ioutil.ReadAll(resp.Body)
+			data, err := io.ReadAll(resp.Body)
 			if err == nil {
 				return nil, errors.New(string(data))
 			}
 		}
 		return nil, err
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			logrus.Errorf("failed to close websocket connection: %v", err)
+		}
+	}()
 
 	_, msg, err := conn.NextReader()
 	if err != nil {
@@ -82,7 +86,11 @@ func Get(cacerts []byte, url string, header http.Header) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer writer.Close()
+	defer func() {
+		if err := writer.Close(); err != nil {
+			logrus.Errorf("failed to close websocket writer: %v", err)
+		}
+	}()
 
 	if err := json.NewEncoder(writer).Encode(challengeResp); err != nil {
 		return nil, fmt.Errorf("encoding ChallengeResponse: %w", err)
@@ -97,7 +105,7 @@ func Get(cacerts []byte, url string, header http.Header) ([]byte, error) {
 		return nil, fmt.Errorf("reading payload from tpm get: %w", err)
 	}
 
-	return ioutil.ReadAll(msg)
+	return io.ReadAll(msg)
 }
 
 func getChallengeResponse(ec *attest.EncryptedCredential, aikBytes []byte) (*ChallengeResponse, error) {
@@ -107,13 +115,21 @@ func getChallengeResponse(ec *attest.EncryptedCredential, aikBytes []byte) (*Cha
 	if err != nil {
 		return nil, fmt.Errorf("opening tpm: %w", err)
 	}
-	defer tpm.Close()
+	defer func() {
+		if err := tpm.Close(); err != nil {
+			logrus.Errorf("failed to close tpm: %v", err)
+		}
+	}()
 
 	aik, err := tpm.LoadAK(aikBytes)
 	if err != nil {
 		return nil, err
 	}
-	defer aik.Close(tpm)
+	defer func() {
+		if err := aik.Close(tpm); err != nil {
+			logrus.Errorf("failed to close aik: %v", err)
+		}
+	}()
 
 	secret, err := aik.ActivateCredential(tpm, *ec)
 	if err != nil {

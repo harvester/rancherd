@@ -34,7 +34,7 @@ func RunWithKubernetesVersion(ctx context.Context, k8sVersion string, plan *appl
 
 	images := image.NewUtility("", "", "", registry.GetConfigFile(runtime))
 	apply := applyinator.NewApplyinator(filepath.Join(dataDir, "plan", "work"), false,
-		filepath.Join(dataDir, "plan", "applied"), filepath.Join(dataDir, "plan", "interlock"), images)
+		filepath.Join(dataDir, "plan", "applied"), "", images)
 
 	output, err := apply.Apply(ctx, applyinator.ApplyInput{
 		CalculatedPlan: applyinator.CalculatedPlan{
@@ -54,7 +54,11 @@ func saveOutput(data []byte, dataDir string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logrus.Warnf("failed to close file %s: %v", planOutput, err)
+		}
+	}()
 
 	in, err := gzip.NewReader(bytes.NewBuffer(data))
 	if err != nil {
@@ -75,7 +79,11 @@ func writePlan(plan *applyinator.Plan, dataDir string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logrus.Errorf("failed to close plan file %s: %v", planFile, err)
+		}
+	}()
 
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")

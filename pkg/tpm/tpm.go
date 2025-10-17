@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/google/go-attestation/attest"
+	"github.com/sirupsen/logrus"
 )
 
 func ResolveToken(token string) (bool, string, error) {
@@ -40,7 +41,11 @@ func getEK() (*attest.EK, error) {
 	if err != nil {
 		return nil, fmt.Errorf("opening tpm: %w", err)
 	}
-	defer tpm.Close()
+	defer func() {
+		if err := tpm.Close(); err != nil {
+			logrus.Errorf("failed to close tpm: %v", err)
+		}
+	}()
 
 	eks, err := tpm.EKs()
 	if err != nil {
@@ -71,7 +76,11 @@ func getAttestationData() (*AttestationData, []byte, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("opening tpm: %w", err)
 	}
-	defer tpm.Close()
+	defer func() {
+		if err := tpm.Close(); err != nil {
+			logrus.Errorf("failed to close tpm: %v", err)
+		}
+	}()
 
 	eks, err := tpm.EKs()
 	if err != nil {
@@ -81,7 +90,11 @@ func getAttestationData() (*AttestationData, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	defer ak.Close(tpm)
+	defer func() {
+		if err := ak.Close(tpm); err != nil {
+			logrus.Errorf("failed to close ak: %v", err)
+		}
+	}()
 	params := ak.AttestationParameters()
 
 	if len(eks) == 0 {

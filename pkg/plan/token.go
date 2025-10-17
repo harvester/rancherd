@@ -1,7 +1,6 @@
 package plan
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/harvester/rancherd/pkg/config"
@@ -40,7 +39,7 @@ func existingToken(cfg *config.Config) (string, error) {
 	}
 
 	cfgFile := runtime.GetConfigLocation(config.GetRuntime(k8sVersion))
-	data, err := ioutil.ReadFile(cfgFile)
+	data, err := os.ReadFile(cfgFile)
 	if os.IsNotExist(err) {
 		return "", nil
 	} else if err != nil {

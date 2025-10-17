@@ -211,7 +211,6 @@ func (p *plan) addPrePostInstructions(cfg *config.Config, k8sVersion string) {
 	}
 
 	p.OneTimeInstructions = instructions
-	return
 }
 
 func (p *plan) addInstruction(instruction *applyinator.OneTimeInstruction, err error) error {
