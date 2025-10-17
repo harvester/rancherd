@@ -40,6 +40,9 @@ func RunWithKubernetesVersion(ctx context.Context, k8sVersion string, plan *appl
 		CalculatedPlan: applyinator.CalculatedPlan{
 			Plan: *plan,
 		},
+		RunOneTimeInstructions:     true,
+		OneTimeInstructionAttempts: 100,
+		ReconcileFiles:             true,
 	})
 	if err != nil {
 		return err
