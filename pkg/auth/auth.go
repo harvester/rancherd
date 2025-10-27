@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -27,7 +26,6 @@ import (
 )
 
 var (
-	bootstrappedRole       = "authz.management.cattle.io/bootstrapped-role"
 	bootstrapAdminConfig   = "admincreated"
 	cattleNamespace        = "cattle-system"
 	defaultAdminLabelKey   = "authz.management.cattle.io/bootstrapping"
@@ -72,7 +70,7 @@ func resetAdmin(ctx context.Context, kubeconfig, password, passwordFile string) 
 		mustChangePassword = false
 	}
 	if passwordFile != "" {
-		passwordFromFile, err := ioutil.ReadFile(passwordFile)
+		passwordFromFile, err := os.ReadFile(passwordFile)
 		if err != nil {
 			return err
 		}
@@ -340,7 +338,7 @@ func getServerURL(ctx context.Context, nodeClient corev1interface.NodeInterface,
 func setClusterAnnotation(ctx context.Context, clustersClient dynamic.NamespaceableResourceInterface, adminName string) error {
 	cluster, err := clustersClient.Get(ctx, "local", v1.GetOptions{})
 	if err != nil {
-		return fmt.Errorf("Local cluster is not ready yet (get local cluster: %w)", err)
+		return fmt.Errorf("local cluster is not ready yet (get local cluster: %w)", err)
 	}
 	if adminName == "" {
 		return errors.Errorf("User is not set yet")
@@ -379,11 +377,10 @@ func setConditionToFalse(object map[string]interface{}, cond string) {
 			m["status"] = "False"
 		}
 	}
-	return
 }
 
 func readTLSSan() (string, error) {
-	bytes, err := ioutil.ReadFile("/etc/rancher/rke2/config.yaml")
+	bytes, err := os.ReadFile("/etc/rancher/rke2/config.yaml")
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}

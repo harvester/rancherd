@@ -2,7 +2,6 @@ package config
 
 import (
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -46,9 +45,9 @@ type Config struct {
 	Server            string           `json:"server,omitempty"`
 	Discovery         *DiscoveryConfig `json:"discovery,omitempty"`
 
-	RancherValues    map[string]interface{}    `json:"rancherValues,omitempty"`
-	PreInstructions  []applyinator.Instruction `json:"preInstructions,omitempty"`
-	PostInstructions []applyinator.Instruction `json:"postInstructions,omitempty"`
+	RancherValues    map[string]interface{}           `json:"rancherValues,omitempty"`
+	PreInstructions  []applyinator.OneTimeInstruction `json:"preInstructions,omitempty"`
+	PostInstructions []applyinator.OneTimeInstruction `json:"postInstructions,omitempty"`
 	// Deprecated, use Resources instead
 	BootstrapResources []v1.GenericMap `json:"bootstrapResources,omitempty"`
 	Resources          []v1.GenericMap `json:"resources,omitempty"`
@@ -71,7 +70,7 @@ func paths() (result []string) {
 	for _, file := range implicitPaths {
 		result = append(result, file)
 
-		files, err := ioutil.ReadDir(file)
+		files, err := os.ReadDir(file)
 		if err != nil {
 			continue
 		}
@@ -148,7 +147,11 @@ func loadResources(dirs ...string) (result []v1.GenericMap, _ error) {
 			if err != nil {
 				return err
 			}
-			defer f.Close()
+			defer func() {
+				if err := f.Close(); err != nil {
+					logrus.Warnf("failed to close file %s: %v", path, err)
+				}
+			}()
 
 			objs, err := yaml.ToObjects(f)
 			if err != nil {
@@ -180,7 +183,7 @@ func loadResources(dirs ...string) (result []v1.GenericMap, _ error) {
 }
 
 func mergeFile(result map[string]interface{}, file string) (map[string]interface{}, error) {
-	bytes, err := ioutil.ReadFile(file)
+	bytes, err := os.ReadFile(file)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
@@ -214,7 +217,7 @@ func mergeFile(result map[string]interface{}, file string) (map[string]interface
 }
 
 func dotDFiles(basefile string) (result []string, _ error) {
-	files, err := ioutil.ReadDir(basefile + ".d")
+	files, err := os.ReadDir(basefile + ".d")
 	if os.IsNotExist(err) {
 		return nil, nil
 	} else if err != nil {

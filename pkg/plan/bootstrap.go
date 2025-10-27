@@ -194,7 +194,7 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 }
 
 func (p *plan) addPrePostInstructions(cfg *config.Config, k8sVersion string) {
-	var instructions []applyinator.Instruction
+	var instructions []applyinator.OneTimeInstruction
 
 	for _, inst := range cfg.PreInstructions {
 		if k8sVersion != "" {
@@ -203,23 +203,22 @@ func (p *plan) addPrePostInstructions(cfg *config.Config, k8sVersion string) {
 		instructions = append(instructions, inst)
 	}
 
-	instructions = append(instructions, p.Instructions...)
+	instructions = append(instructions, p.OneTimeInstructions...)
 
 	for _, inst := range cfg.PostInstructions {
 		inst.Env = append(inst.Env, kubectl.Env(k8sVersion)...)
 		instructions = append(instructions, inst)
 	}
 
-	p.Instructions = instructions
-	return
+	p.OneTimeInstructions = instructions
 }
 
-func (p *plan) addInstruction(instruction *applyinator.Instruction, err error) error {
+func (p *plan) addInstruction(instruction *applyinator.OneTimeInstruction, err error) error {
 	if err != nil || instruction == nil {
 		return err
 	}
 
-	p.Instructions = append(p.Instructions, *instruction)
+	p.OneTimeInstructions = append(p.OneTimeInstructions, *instruction)
 	return nil
 }
 

@@ -216,7 +216,11 @@ func (r *Rancherd) writeConfig(path string, cfg config.Config) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logrus.Errorf("failed to close config file %s: %v", path, err)
+		}
+	}()
 	data, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err

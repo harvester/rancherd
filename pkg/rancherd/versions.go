@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"runtime"
 	"strings"
 
@@ -25,7 +25,7 @@ func (r *Rancherd) getExistingVersions(ctx context.Context) (rancherVersion, k8s
 		return "", "", ""
 	}
 
-	data, err := ioutil.ReadFile(kubeConfig)
+	data, err := os.ReadFile(kubeConfig)
 	if err != nil {
 		return "", "", ""
 	}
@@ -85,7 +85,7 @@ func getK8sVersion(ctx context.Context, k8s kubernetes.Interface) string {
 }
 
 func getRancherOSVersion() string {
-	data, err := ioutil.ReadFile("/usr/lib/rancheros-release")
+	data, err := os.ReadFile("/usr/lib/rancheros-release")
 	if err != nil {
 		return ""
 	}

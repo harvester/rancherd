@@ -3,7 +3,6 @@ package resources
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -26,32 +25,6 @@ import (
 const (
 	localRKEStateSecretType = "rke.cattle.io/cluster-state"
 )
-
-func writeCattleID(id string) error {
-	if err := os.MkdirAll("/etc/rancher", 0755); err != nil {
-		return fmt.Errorf("mkdir /etc/rancher: %w", err)
-	}
-	if err := os.MkdirAll("/etc/rancher/agent", 0700); err != nil {
-		return fmt.Errorf("mkdir /etc/rancher/agent: %w", err)
-	}
-	return ioutil.WriteFile("/etc/rancher/agent/cattle-id", []byte(id), 0400)
-}
-
-func getCattleID() (string, error) {
-	data, err := ioutil.ReadFile("/etc/rancher/agent/cattle-id")
-	if err != nil && !os.IsNotExist(err) {
-		return "", err
-	}
-	id := strings.TrimSpace(string(data))
-	if id == "" {
-		id, err = randomtoken.Generate()
-		if err != nil {
-			return "", err
-		}
-		return id, writeCattleID(id)
-	}
-	return id, nil
-}
 
 func ToBootstrapFile(config *config.Config, path string) (*applyinator.File, error) {
 	nodeName := config.NodeName
@@ -170,7 +143,9 @@ func ToHarvesterClusterRepoFile(path string) (*applyinator.File, error) {
 	}
 
 	result := config.Config{}
-	convert.ToObj(values, &result)
+	if err := convert.ToObj(values, &result); err != nil {
+		return nil, err
+	}
 
 	resources := []v1.GenericMap{}
 	for _, resource := range result.Resources {
@@ -208,52 +183,52 @@ func GetBootstrapManifests(dataDir string) string {
 	return fmt.Sprintf("%s/bootstrapmanifests/rancherd.yaml", dataDir)
 }
 
-func ToInstruction(imageOverride, systemDefaultRegistry, k8sVersion, dataDir string) (*applyinator.Instruction, error) {
+func ToInstruction(imageOverride, systemDefaultRegistry, k8sVersion, dataDir string) (*applyinator.OneTimeInstruction, error) {
 	bootstrap := GetBootstrapManifests(dataDir)
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
 	}
-	return &applyinator.Instruction{
-		Name:       "bootstrap",
-		SaveOutput: true,
-		Image:      images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion),
-		Args:       []string{"retry", kubectl.Command(k8sVersion), "apply", "--validate=false", "-f", bootstrap},
-		Command:    cmd,
-		Env:        kubectl.Env(k8sVersion),
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "bootstrap"
+	instruction.SaveOutput = true
+	instruction.Image = images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion)
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "apply", "--validate=false", "-f", bootstrap}
+	instruction.Command = cmd
+	instruction.Env = kubectl.Env(k8sVersion)
+	return instruction, nil
 }
 
 func GetHarvesterClusterRepoManifests(dataDir string) string {
 	return fmt.Sprintf("%s/bootstrapmanifests/harvester-cluster-repo.yaml", dataDir)
 }
 
-func ToHarvesterClusterRepoInstruction(imageOverride, systemDefaultRegistry, k8sVersion, dataDir string) (*applyinator.Instruction, error) {
+func ToHarvesterClusterRepoInstruction(imageOverride, systemDefaultRegistry, k8sVersion, dataDir string) (*applyinator.OneTimeInstruction, error) {
 	bootstrap := GetHarvesterClusterRepoManifests(dataDir)
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
 	}
-	return &applyinator.Instruction{
-		Name:       "harvester-cluster-repo",
-		SaveOutput: true,
-		Image:      images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion),
-		Args:       []string{"retry", kubectl.Command(k8sVersion), "apply", "--validate=false", "-f", bootstrap},
-		Command:    cmd,
-		Env:        kubectl.Env(k8sVersion),
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "harvester-cluster-repo"
+	instruction.SaveOutput = true
+	instruction.Image = images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion)
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "apply", "--validate=false", "-f", bootstrap}
+	instruction.Command = cmd
+	instruction.Env = kubectl.Env(k8sVersion)
+	return instruction, nil
 }
 
-func ToWaitHarvesterClusterRepoInstruction(k8sVersion string) (*applyinator.Instruction, error) {
+func ToWaitHarvesterClusterRepoInstruction(k8sVersion string) (*applyinator.OneTimeInstruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
 	}
-	return &applyinator.Instruction{
-		Name:       "wait-harvester-cluster-repo",
-		SaveOutput: true,
-		Args:       []string{"retry", kubectl.Command(k8sVersion), "-n", "cattle-system", "rollout", "status", "-w", "deploy/harvester-cluster-repo"},
-		Env:        kubectl.Env(k8sVersion),
-		Command:    cmd,
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "wait-harvester-cluster-repo"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "-n", "cattle-system", "rollout", "status", "-w", "deploy/harvester-cluster-repo"}
+	instruction.Env = kubectl.Env(k8sVersion)
+	instruction.Command = cmd
+	return instruction, nil
 }

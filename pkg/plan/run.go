@@ -34,16 +34,21 @@ func RunWithKubernetesVersion(ctx context.Context, k8sVersion string, plan *appl
 
 	images := image.NewUtility("", "", "", registry.GetConfigFile(runtime))
 	apply := applyinator.NewApplyinator(filepath.Join(dataDir, "plan", "work"), false,
-		filepath.Join(dataDir, "plan", "applied"), images)
+		filepath.Join(dataDir, "plan", "applied"), "", images)
 
-	output, err := apply.Apply(ctx, applyinator.CalculatedPlan{
-		Plan: *plan,
+	output, err := apply.Apply(ctx, applyinator.ApplyInput{
+		CalculatedPlan: applyinator.CalculatedPlan{
+			Plan: *plan,
+		},
+		RunOneTimeInstructions:     true,
+		OneTimeInstructionAttempts: 100,
+		ReconcileFiles:             true,
 	})
 	if err != nil {
 		return err
 	}
 
-	return saveOutput(output, dataDir)
+	return saveOutput(output.OneTimeOutput, dataDir)
 }
 
 func saveOutput(data []byte, dataDir string) error {
@@ -52,7 +57,11 @@ func saveOutput(data []byte, dataDir string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logrus.Warnf("failed to close file %s: %v", planOutput, err)
+		}
+	}()
 
 	in, err := gzip.NewReader(bytes.NewBuffer(data))
 	if err != nil {
@@ -73,7 +82,11 @@ func writePlan(plan *applyinator.Plan, dataDir string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logrus.Errorf("failed to close plan file %s: %v", planFile, err)
+		}
+	}()
 
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")

@@ -93,15 +93,15 @@ func replaceRuntimeForProbes(probes map[string]prober.Probe, runtime config.Runt
 	return result
 }
 
-func ToInstruction() (*applyinator.Instruction, error) {
+func ToInstruction() (*applyinator.OneTimeInstruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
 	}
-	return &applyinator.Instruction{
-		Name:       "probes",
-		SaveOutput: true,
-		Args:       []string{"probe"},
-		Command:    cmd,
-	}, nil
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "probes"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"probe"}
+	instruction.Command = cmd
+	return instruction, nil
 }

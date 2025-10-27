@@ -70,7 +70,11 @@ func K8sVersion(kubernetesVersion string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("getting channel version from (%s): %w", versionOrURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			logrus.Errorf("failed to close response body: %v", err)
+		}
+	}()
 
 	url, err := resp.Location()
 	if err != nil {
@@ -101,7 +105,11 @@ func RancherVersion(rancherVersion string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("getting rancher channel version from (%s): %w", versionOrURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			logrus.Errorf("failed to close response body: %v", err)
+		}
+	}()
 
 	index := &chartIndex{}
 	if err := yaml.NewDecoder(resp.Body).Decode(index); err != nil {
@@ -139,7 +147,11 @@ func RancherOSVersion(rancherOSVersion string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("getting channel version from (%s): %w", versionOrURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			logrus.Errorf("failed to close response body: %v", err)
+		}
+	}()
 
 	url, err := resp.Location()
 	if err != nil {
