@@ -119,34 +119,6 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		return err
 	}
 
-	if err := p.addInstruction(rancher.ToScaleDownFleetControllerInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(rancher.ToUpdateClientSecretInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(rancher.ToScaleUpFleetControllerInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	// Above Rancher v2.9.x, we cannot patch provisioing cluster with empty rkeConfig,
-	// so we need to delete the webhook validation configuration.
-	if semver.Compare(cfg.RancherVersion, "v2.9.0") >= 0 {
-		if err := p.addInstruction(rancher.ToDeleteRancherWebhookValidationConfiguration(k8sVersion)); err != nil {
-			return err
-		}
-	}
-
-	// Patch local provisioning cluster status before installing bootstrap resources,
-	// so bundles can be created first and managed charts can be installed smoothly.
-	if semver.Compare(cfg.RancherVersion, "v2.8.0") >= 0 {
-		if err := p.addInstruction(rancher.PatchLocalProvisioningClusterStatus(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-			return err
-		}
-	}
-
 	// If clusterrepo check fails, it waits 5 minutes and retries.
 	// Install harvester-cluster-repo deployment before clusterrepo,
 	// so we can avoid the 5 minutes waiting time.
@@ -160,12 +132,6 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 
 	if err := p.addInstruction(resources.ToInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, dataDir)); err != nil {
 		return err
-	}
-
-	if semver.Compare(cfg.RancherVersion, "v2.9.0") >= 0 {
-		if err := p.addInstruction(rancher.ToRestartRancherWebhookInstruction(k8sVersion)); err != nil {
-			return err
-		}
 	}
 
 	if err := p.addInstruction(rancher.ToWaitSUCInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
