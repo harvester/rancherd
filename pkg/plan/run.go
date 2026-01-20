@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -46,6 +47,12 @@ func RunWithKubernetesVersion(ctx context.Context, k8sVersion string, plan *appl
 	})
 	if err != nil {
 		return err
+	}
+
+	// Explicitly check if one-time instruction executions fail because the plan
+	// execution above will not error upon such cases.
+	if !output.OneTimeApplySucceeded {
+		return errors.New("one-time instruction executions failed")
 	}
 
 	return saveOutput(output.OneTimeOutput, dataDir)
