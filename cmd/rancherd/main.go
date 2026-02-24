@@ -12,7 +12,6 @@ import (
 	"github.com/harvester/rancherd/cmd/rancherd/probe"
 	"github.com/harvester/rancherd/cmd/rancherd/resetadmin"
 	"github.com/harvester/rancherd/cmd/rancherd/retry"
-	"github.com/harvester/rancherd/cmd/rancherd/updateclientsecret"
 	"github.com/harvester/rancherd/cmd/rancherd/upgrade"
 )
 
@@ -34,7 +33,6 @@ func main() {
 		upgrade.NewUpgrade(),
 		info.NewInfo(),
 		gettpmhash.NewGetTPMHash(),
-		updateclientsecret.NewUpdateClientSecret(),
 	)
 
 	if err := root.Execute(); err != nil {
