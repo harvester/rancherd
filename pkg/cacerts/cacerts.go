@@ -16,7 +16,7 @@ import (
 
 	"github.com/harvester/rancherd/pkg/tpm"
 	"github.com/rancher/system-agent/pkg/applyinator"
-	"github.com/rancher/wrangler/pkg/randomtoken"
+	"github.com/rancher/wrangler/v3/pkg/randomtoken"
 	"github.com/sirupsen/logrus"
 )
 

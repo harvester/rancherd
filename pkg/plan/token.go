@@ -6,9 +6,9 @@ import (
 	"github.com/harvester/rancherd/pkg/config"
 	"github.com/harvester/rancherd/pkg/runtime"
 	"github.com/harvester/rancherd/pkg/versions"
-	"github.com/rancher/wrangler/pkg/data/convert"
-	"github.com/rancher/wrangler/pkg/randomtoken"
-	"github.com/rancher/wrangler/pkg/yaml"
+	"github.com/rancher/wrangler/v3/pkg/data/convert"
+	"github.com/rancher/wrangler/v3/pkg/randomtoken"
+	"github.com/rancher/wrangler/v3/pkg/yaml"
 )
 
 func assignTokenIfUnset(cfg *config.Config) error {

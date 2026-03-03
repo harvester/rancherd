@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/harvester/rancherd/pkg/cacerts"
-	"github.com/rancher/wrangler/pkg/data"
-	"github.com/rancher/wrangler/pkg/data/convert"
+	"github.com/rancher/wrangler/v3/pkg/data"
+	"github.com/rancher/wrangler/v3/pkg/data/convert"
 	"github.com/sirupsen/logrus"
 )
 
