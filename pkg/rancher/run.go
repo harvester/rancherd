@@ -8,7 +8,7 @@ import (
 	"github.com/harvester/rancherd/pkg/images"
 	"github.com/harvester/rancherd/pkg/kubectl"
 	"github.com/rancher/system-agent/pkg/applyinator"
-	"github.com/rancher/wrangler/pkg/data"
+	"github.com/rancher/wrangler/v3/pkg/data"
 	"sigs.k8s.io/yaml"
 )
 

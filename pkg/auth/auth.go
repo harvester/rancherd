@@ -8,7 +8,7 @@ import (
 
 	"github.com/harvester/rancherd/pkg/kubectl"
 	"github.com/pkg/errors"
-	"github.com/rancher/wrangler/pkg/randomtoken"
+	"github.com/rancher/wrangler/v3/pkg/randomtoken"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/yaml.v2"

@@ -9,9 +9,9 @@ import (
 	v1 "github.com/rancher/rancher/pkg/apis/rke.cattle.io/v1"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wharfie/pkg/registries"
-	"github.com/rancher/wrangler/pkg/data"
-	"github.com/rancher/wrangler/pkg/data/convert"
-	"github.com/rancher/wrangler/pkg/yaml"
+	"github.com/rancher/wrangler/v3/pkg/data"
+	"github.com/rancher/wrangler/v3/pkg/data/convert"
+	"github.com/rancher/wrangler/v3/pkg/yaml"
 	"github.com/sirupsen/logrus"
 )
 
