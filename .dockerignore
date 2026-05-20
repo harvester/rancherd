@@ -1,3 +1,7 @@
-./.dapper
-./.cache
-./dist
+.git
+.dapper
+.cache
+/bin
+/dist
+*.swp
+.idea
