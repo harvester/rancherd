@@ -1,6 +1,3 @@
-# syntax=docker/dockerfile:1
-# check=skip=InvalidDefaultArgInFrom
-
 FROM golangci/golangci-lint:v2.12.2-alpine@sha256:91b27804074a0bacea298707f016911e60cf0cdbc6c7bf5ccacb5f0606d18d60 AS golangci-lint-bin
 
 FROM registry.suse.com/bci/golang:1.26 AS builder
