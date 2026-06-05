@@ -1,6 +1,6 @@
 module github.com/harvester/rancherd
 
-go 1.25.7
+go 1.26
 
 replace (
 	k8s.io/api => k8s.io/api v0.34.5
