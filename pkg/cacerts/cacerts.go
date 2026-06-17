@@ -20,6 +20,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	rke2NodeTokenPath  = "/var/lib/rancher/rke2/server/node-token"
+	rancherdConfigPath = "/oem/90_custom.yaml"
+	rancherdAltConfig  = "/etc/rancher/rancherd/config.yaml"
+)
+
 var insecureClient = &http.Client{
 	Timeout: time.Second * 5,
 	Transport: &http.Transport{
@@ -169,10 +175,13 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 
 func cacertsResponseError(statusCode int, status string, data []byte) error {
 	if statusCode == http.StatusBadGateway {
-		return fmt.Errorf("failed to authenticate %d: %s (likely token mismatch or incorrect server URL)\n"+
-			"Verify cluster token matches /var/lib/rancher/rke2/server/node-token on management node\n"+
-			"Check token configuration in /oem/90_custom.yaml or /etc/rancher/rancherd/config.yaml\n"+
-			"Response: %s", statusCode, status, data)
+		return fmt.Errorf("failed to get cacerts (HTTP %d %s): likely token mismatch or incorrect server URL; "+
+			"verify cluster token matches %s on management node; "+
+			"check token configuration in %s or %s; "+
+			"response: %s",
+			statusCode, status,
+			rke2NodeTokenPath, rancherdConfigPath, rancherdAltConfig,
+			data)
 	}
 	return fmt.Errorf("response %d: %s getting cacerts: %s", statusCode, status, data)
 }
