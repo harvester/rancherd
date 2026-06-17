@@ -175,11 +175,11 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 
 func cacertsResponseError(statusCode int, status string, data []byte) error {
 	if statusCode == http.StatusBadGateway {
-		return fmt.Errorf("failed to get cacerts (HTTP %d %s): likely token mismatch or incorrect server URL; "+
-			"verify cluster token matches %s on management node; "+
+		return fmt.Errorf("failed to get cacerts (HTTP %s): likely token mismatch or incorrect server URL; "+
+			"verify the provided token matches %s on the server node; "+
 			"check token configuration in %s or %s; "+
 			"response: %s",
-			statusCode, status,
+			status,
 			rke2NodeTokenPath, rancherdConfigPath, rancherdAltConfig,
 			data)
 	}
