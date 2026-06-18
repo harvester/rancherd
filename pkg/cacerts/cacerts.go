@@ -20,6 +20,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	rke2NodeTokenPath  = "/var/lib/rancher/rke2/server/node-token"
+	rancherdConfigPath = "/oem/90_custom.yaml"
+	rancherdAltConfig  = "/etc/rancher/rancherd/config.yaml"
+)
+
 var insecureClient = &http.Client{
 	Timeout: time.Second * 5,
 	Transport: &http.Transport{
@@ -151,7 +157,7 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, "", fmt.Errorf("response %d: %s getting cacerts: %s", resp.StatusCode, resp.Status, data)
+		return nil, "", cacertsResponseError(resp.StatusCode, resp.Status, data)
 	}
 
 	if resp.Header.Get("X-Cattle-Hash") != hash(token, nonce, data) {
@@ -165,6 +171,19 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 	}
 
 	return data, hashHex(data), nil
+}
+
+func cacertsResponseError(statusCode int, status string, data []byte) error {
+	if statusCode == http.StatusBadGateway {
+		return fmt.Errorf("failed to get cacerts (HTTP %s): likely token mismatch or incorrect server URL; "+
+			"verify the provided token matches %s on the server node; "+
+			"check token configuration in %s or %s; "+
+			"response: %s",
+			status,
+			rke2NodeTokenPath, rancherdConfigPath, rancherdAltConfig,
+			data)
+	}
+	return fmt.Errorf("response %d: %s getting cacerts: %s", statusCode, status, data)
 }
 
 func ToUpdateCACertificatesInstruction() (*applyinator.OneTimeInstruction, error) {
