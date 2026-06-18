@@ -3,6 +3,6 @@
     "github>harvester/dependency-automation:renovate"
   ],
   "baseBranchPatterns": [
-    "harvester-dev"
+    "^harvester-dev$"
   ]
 }
