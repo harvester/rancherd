@@ -1,6 +1,6 @@
 FROM golangci/golangci-lint:v2.12.2-alpine@sha256:91b27804074a0bacea298707f016911e60cf0cdbc6c7bf5ccacb5f0606d18d60 AS golangci-lint-bin
 
-FROM registry.suse.com/bci/golang:1.26 AS builder
+FROM registry.suse.com/bci/golang:1.26.0 AS builder
 ARG MK_HOST_ARCH
 ENV ARCH=$MK_HOST_ARCH
 RUN zypper in -y bash git gcc docker vim less file curl wget ca-certificates trousers-devel
