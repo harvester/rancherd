@@ -2,7 +2,7 @@
   "extends": [
     "github>harvester/dependency-automation:renovate"
   ],
-  "baseBranchPatterns": [
-    "^harvester-dev$"
+  "baseBranches": [
+    "harvester-dev"
   ]
 }
