@@ -47,7 +47,7 @@ require (
 	github.com/rancher/wharfie v0.7.1-0.20251014190711-8cfe84a9efaa
 	github.com/rancher/wrangler/v3 v3.3.4
 	github.com/sirupsen/logrus v1.9.4
-	github.com/spf13/cobra v1.9.1
+	github.com/spf13/cobra v1.10.2
 	golang.org/x/crypto v0.47.0
 	golang.org/x/mod v0.31.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -152,7 +152,7 @@ require (
 	github.com/rancher/permissions v0.0.0-20240924180251-69b0dcb34065 // indirect
 	github.com/renier/xmlrpc v0.0.0-20170708154548-ce4a1a486c03 // indirect
 	github.com/softlayer/softlayer-go v0.0.0-20180806151055-260589d94c7d // indirect
-	github.com/spf13/pflag v1.0.6 // indirect
+	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/stoewer/go-strcase v1.3.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v3.0.83+incompatible // indirect
 	github.com/vbatts/tar-split v0.11.3 // indirect
