@@ -40,7 +40,7 @@ require (
 	github.com/google/certificate-transparency-go v1.1.2
 	github.com/google/go-attestation v0.3.2
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
-	github.com/hashicorp/go-discover v0.0.0-20201029210230-738cb3105cd0
+	github.com/hashicorp/go-discover v0.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/rancher/rancher/pkg/apis v0.0.0-20260224044902-48784075a581
 	github.com/rancher/system-agent v0.3.14
@@ -75,7 +75,7 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
-	github.com/aws/aws-sdk-go v1.38.65 // indirect
+	github.com/aws/aws-sdk-go v1.44.262 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
@@ -133,7 +133,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/linode/linodego v0.7.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/miekg/dns v1.1.35 // indirect
+	github.com/miekg/dns v1.1.50 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
@@ -184,6 +184,7 @@ require (
 	golang.org/x/term v0.39.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
+	golang.org/x/tools v0.40.0 // indirect
 	google.golang.org/api v0.169.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250825161204-c5933d9347a5 // indirect
