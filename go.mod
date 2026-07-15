@@ -48,7 +48,7 @@ require (
 	github.com/rancher/wrangler/v3 v3.3.4
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.9.1
-	golang.org/x/crypto v0.51.0
+	golang.org/x/crypto v0.52.0
 	golang.org/x/mod v0.35.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
