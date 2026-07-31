@@ -102,17 +102,15 @@ func ToBootstrapFile(config *config.Config, path string) (*applyinator.File, err
 		},
 	}, v1.GenericMap{
 		Data: map[string]interface{}{
-			"kind":       "ClusterRegistrationToken",
-			"apiVersion": "management.cattle.io/v3",
+			"kind":       "Secret",
+			"apiVersion": "v1",
 			"metadata": map[string]interface{}{
-				"name":      "default-token",
+				"name":      "crt-token-default-token",
 				"namespace": "local",
 			},
-			"spec": map[string]interface{}{
-				"clusterName": "local",
-			},
-			"status": map[string]interface{}{
-				"token": token,
+			"type": "Opaque",
+			"data": map[string]interface{}{
+				"token": []byte(token),
 			},
 		},
 	}, v1.GenericMap{
