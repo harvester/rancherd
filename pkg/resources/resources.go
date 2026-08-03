@@ -88,6 +88,17 @@ func ToBootstrapFile(config *config.Config, path string) (*applyinator.File, err
 		},
 	}, v1.GenericMap{
 		Data: map[string]interface{}{
+			"kind":       "Cluster",
+			"apiVersion": "management.cattle.io/v3",
+			"metadata": map[string]interface{}{
+				"name": "local",
+				"annotations": map[string]interface{}{
+					"provisioning.cattle.io/administrated": "true",
+				},
+			},
+		},
+	}, v1.GenericMap{
+		Data: map[string]interface{}{
 			"kind":       "Secret",
 			"apiVersion": "v1",
 			"metadata": map[string]interface{}{
