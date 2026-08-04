@@ -119,6 +119,21 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		return err
 	}
 
+	// Since Rancher v2.15.0, tls-internal-cn-allowed-services is needed to be
+	// configured properly to prevent TLS certificate flapping
+	// https://github.com/harvester/harvester/issues/11338
+	if semver.Compare(cfg.RancherVersion, "v2.15.0") >= 0 {
+		if err := p.addInstruction(rancher.ToApplyTlsInternalCnAllowedSettingInstruction(k8sVersion, dataDir)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToRestartRancherInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
+			return err
+		}
+		if err := p.addInstruction(rancher.ToWaitRancherInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
+			return err
+		}
+	}
+
 	// If clusterrepo check fails, it waits 5 minutes and retries.
 	// Install harvester-cluster-repo deployment before clusterrepo,
 	// so we can avoid the 5 minutes waiting time.
@@ -217,6 +232,11 @@ func (p *plan) addFiles(cfg *config.Config, dataDir string) error {
 
 	// bootstrap manifests
 	if err := p.addFile(resources.ToBootstrapFile(cfg, resources.GetBootstrapManifests(dataDir))); err != nil {
+		return err
+	}
+
+	// tls-internal-cn-allowed-services manifests
+	if err := p.addFile(rancher.ToTlsInternalCnAllowedSettingFile(cfg, dataDir)); err != nil {
 		return err
 	}
 

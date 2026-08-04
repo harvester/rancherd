@@ -10,6 +10,20 @@ import (
 	"github.com/harvester/rancherd/pkg/self"
 )
 
+func ToRestartRancherInstruction(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "restart-rancher"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "-n", "cattle-system", "rollout", "restart", "deploy/rancher"}
+	instruction.Env = kubectl.Env(k8sVersion)
+	instruction.Command = cmd
+	return instruction, nil
+}
+
 func ToWaitRancherInstruction(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
@@ -91,6 +105,21 @@ func ToCreateStvAggregationSecret(k8sVersion string) (*applyinator.OneTimeInstru
 	instruction.Name = "create-stv-aggregation-secret"
 	instruction.SaveOutput = true
 	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "create", "secret", "generic", "-n", "cattle-system", "stv-aggregation"}
+	instruction.Env = kubectl.Env(k8sVersion)
+	instruction.Command = cmd
+	return instruction, nil
+}
+
+func ToApplyTlsInternalCnAllowedSettingInstruction(k8sVersion, dataDir string) (*applyinator.OneTimeInstruction, error) {
+	path := GetTlsInternalCnAllowedSetting(dataDir)
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "apply-tls-internal-cn-allowed-setting"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "apply", "--validate=false", "-f", path}
 	instruction.Env = kubectl.Env(k8sVersion)
 	instruction.Command = cmd
 	return instruction, nil

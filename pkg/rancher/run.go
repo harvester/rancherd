@@ -7,6 +7,8 @@ import (
 	"github.com/harvester/rancherd/pkg/config"
 	"github.com/harvester/rancherd/pkg/images"
 	"github.com/harvester/rancherd/pkg/kubectl"
+	"github.com/harvester/rancherd/pkg/resources"
+	v1 "github.com/rancher/rancher/pkg/apis/rke.cattle.io/v1"
 	"github.com/rancher/system-agent/pkg/applyinator"
 	"github.com/rancher/wrangler/v3/pkg/data"
 	"sigs.k8s.io/yaml"
@@ -27,6 +29,10 @@ func GetRancherValues(dataDir string) string {
 	return fmt.Sprintf("%s/rancher/values.yaml", dataDir)
 }
 
+func GetTlsInternalCnAllowedSetting(dataDir string) string {
+	return fmt.Sprintf("%s/bootstrapmanifests/tls-internal-cn-allowed-setting.yaml", dataDir)
+}
+
 func ToFile(cfg *config.Config, dataDir string) (*applyinator.File, error) {
 	values := data.MergeMaps(defaultValues, map[string]interface{}{
 		"systemDefaultRegistry": cfg.SystemDefaultRegistry,
@@ -42,6 +48,26 @@ func ToFile(cfg *config.Config, dataDir string) (*applyinator.File, error) {
 		Content: base64.StdEncoding.EncodeToString(data),
 		Path:    GetRancherValues(dataDir),
 	}, nil
+}
+
+func ToTlsInternalCnAllowedSettingFile(cfg *config.Config, dataDir string) (*applyinator.File, error) {
+	path := GetTlsInternalCnAllowedSetting(dataDir)
+	rs := []v1.GenericMap{
+		{
+			Data: map[string]interface{}{
+				"apiVersion": "management.cattle.io/v3",
+				"kind":       "Setting",
+				"metadata": map[string]interface{}{
+					"name": "tls-internal-cn-allowed-services",
+				},
+				"customized": false,
+				"default":    "",
+				"source":     "",
+				"value":      "kube-system/rke2-traefik",
+			},
+		},
+	}
+	return resources.ToFile(rs, path)
 }
 
 func ToInstruction(imageOverride, systemDefaultRegistry, k8sVersion, rancherVersion, dataDir string) (*applyinator.OneTimeInstruction, error) {
