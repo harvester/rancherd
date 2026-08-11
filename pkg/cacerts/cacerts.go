@@ -158,12 +158,6 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 		return nil, "", cacertsResponseError(resp.StatusCode, resp.Status, data)
 	}
 
-	if resp.Header.Get("X-Cattle-Hash") != hash(token, nonce, data) {
-		return nil, "", fmt.Errorf("response hash (%s) does not match (%s)",
-			resp.Header.Get("X-Cattle-Hash"),
-			hash(token, nonce, data))
-	}
-
 	if err := checkHMACHeader(resp.Header.Get("X-Cattle-Hash"), token, nonce, data); err != nil {
 		return nil, "", err
 	}
