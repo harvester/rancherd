@@ -51,9 +51,7 @@ func get(server, token, path string, clusterToken bool) ([]byte, string, error) 
 	}
 	u.Path = path
 
-	var (
-		isTPM bool
-	)
+	var isTPM bool
 	if !clusterToken {
 		isTPM, token, err = tpm.ResolveToken(token)
 		if err != nil {
@@ -160,10 +158,8 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 		return nil, "", cacertsResponseError(resp.StatusCode, resp.Status, data)
 	}
 
-	if resp.Header.Get("X-Cattle-Hash") != hash(token, nonce, data) {
-		return nil, "", fmt.Errorf("response hash (%s) does not match (%s)",
-			resp.Header.Get("X-Cattle-Hash"),
-			hash(token, nonce, data))
+	if err := checkHMACHeader(resp.Header.Get("X-Cattle-Hash"), token, nonce, data); err != nil {
+		return nil, "", err
 	}
 
 	if len(data) == 0 {
@@ -184,6 +180,28 @@ func cacertsResponseError(statusCode int, status string, data []byte) error {
 			data)
 	}
 	return fmt.Errorf("response %d: %s getting cacerts: %s", statusCode, status, data)
+}
+
+func checkHMACHeader(HMACHeader string, token string, nonce string, data []byte) error {
+	// Since rancher v2.15.0, an authentication failure or empty token results in an empty HMAC header
+	if HMACHeader == "" {
+		return fmt.Errorf(
+			"missing HMAC header in server response: likely token mismatch or incorrect server URL; "+
+				"verify the provided token matches the token on the server node; "+
+				"check token configuration in %s or %s",
+			rke2NodeTokenPath, rancherdConfigPath,
+		)
+	}
+
+	expected := hash(token, nonce, data)
+	if HMACHeader != expected {
+		return fmt.Errorf("HMAC header verification failed: got %s, expected %s; "+
+			"if token configuration is correct, the response may have been tampered with; "+
+			"check token configuration in %s or %s",
+			HMACHeader, expected, rke2NodeTokenPath, rancherdConfigPath)
+	}
+
+	return nil
 }
 
 func ToUpdateCACertificatesInstruction() (*applyinator.OneTimeInstruction, error) {
