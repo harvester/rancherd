@@ -29,7 +29,6 @@ type Config struct {
 }
 
 type UpgradeConfig struct {
-	RancherVersion    string
 	KubernetesVersion string
 	RancherOSVersion  string
 	Force             bool
@@ -46,9 +45,8 @@ func New(cfg Config) *Rancherd {
 }
 
 func (r *Rancherd) Info(ctx context.Context) error {
-	rancherVersion, k8sVersion, rancherOSVersion := r.getExistingVersions(ctx)
+	k8sVersion, rancherOSVersion := r.getExistingVersions(ctx)
 
-	fmt.Printf("    Rancher:    %s\n", rancherVersion)
 	fmt.Printf("    Kubernetes: %s\n", k8sVersion)
 	if rancherOSVersion != "" {
 		fmt.Printf("    RancherOS:  %s\n", rancherOSVersion)
@@ -63,11 +61,6 @@ func (r *Rancherd) Upgrade(ctx context.Context, upgradeConfig UpgradeConfig) err
 		return fmt.Errorf("loading config: %w", err)
 	}
 
-	rancherVersion, err := versions.RancherVersion(upgradeConfig.RancherVersion)
-	if err != nil {
-		return err
-	}
-
 	k8sVersion, err := versions.K8sVersion(upgradeConfig.KubernetesVersion)
 	if err != nil {
 		return err
@@ -78,22 +71,7 @@ func (r *Rancherd) Upgrade(ctx context.Context, upgradeConfig UpgradeConfig) err
 		return err
 	}
 
-	existingRancherVersion, existingK8sVersion, existingRancherOSVersion := r.getExistingVersions(ctx)
-	if existingRancherVersion == rancherVersion &&
-		existingK8sVersion == k8sVersion &&
-		(existingRancherOSVersion == "" || existingRancherOSVersion == rancherOSVersion) {
-		fmt.Printf("\nNothing to upgrade:\n\n")
-		fmt.Printf("    Rancher:    %s\n", rancherVersion)
-		if existingRancherOSVersion != "" {
-			fmt.Printf("    RancherOS:  %s\n", rancherOSVersion)
-		}
-		fmt.Printf("    Kubernetes: %s\n\n", k8sVersion)
-		return nil
-	}
-
-	if existingRancherVersion == rancherVersion {
-		rancherVersion = ""
-	}
+	existingK8sVersion, existingRancherOSVersion := r.getExistingVersions(ctx)
 	if existingK8sVersion == k8sVersion {
 		k8sVersion = ""
 	}
@@ -111,9 +89,6 @@ func (r *Rancherd) Upgrade(ctx context.Context, upgradeConfig UpgradeConfig) err
 	}
 
 	fmt.Printf("\nUpgrading to:\n\n")
-	if rancherVersion != "" {
-		fmt.Printf("    Rancher:    %s => %s\n", existingRancherVersion, rancherVersion)
-	}
 	if k8sVersion != "" {
 		fmt.Printf("    Kubernetes: %s => %s\n", existingK8sVersion, k8sVersion)
 	}
@@ -134,7 +109,7 @@ func (r *Rancherd) Upgrade(ctx context.Context, upgradeConfig UpgradeConfig) err
 		}
 	}
 
-	nodePlan, err := plan.Upgrade(&cfg, k8sVersion, rancherVersion, rancherOSVersion, DefaultDataDir)
+	nodePlan, err := plan.Upgrade(&cfg, k8sVersion, rancherOSVersion, DefaultDataDir)
 	if err != nil {
 		return err
 	}
@@ -162,13 +137,6 @@ func (r *Rancherd) execute(ctx context.Context) error {
 		return err
 	}
 
-	rancherVersion, err := versions.RancherVersion(cfg.RancherVersion)
-	if err != nil {
-		return err
-	}
-
-	logrus.Infof("Bootstrapping Rancher (%s/%s)", rancherVersion, k8sVersion)
-
 	nodePlan, err := plan.ToPlan(ctx, &cfg, r.cfg.DataDir)
 	if err != nil {
 		return fmt.Errorf("generating plan: %w", err)
@@ -182,7 +150,7 @@ func (r *Rancherd) execute(ctx context.Context) error {
 		return err
 	}
 
-	logrus.Infof("Successfully Bootstrapped Rancher (%s/%s)", rancherVersion, k8sVersion)
+	logrus.Infof("Successfully Bootstrapped K8s %s)", k8sVersion)
 	return nil
 }
 

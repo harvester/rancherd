@@ -41,7 +41,6 @@ var (
 type Config struct {
 	RuntimeConfig
 	KubernetesVersion string           `json:"kubernetesVersion,omitempty"`
-	RancherVersion    string           `json:"rancherVersion,omitempty"`
 	Server            string           `json:"server,omitempty"`
 	Discovery         *DiscoveryConfig `json:"discovery,omitempty"`
 
@@ -52,10 +51,11 @@ type Config struct {
 	BootstrapResources []v1.GenericMap `json:"bootstrapResources,omitempty"`
 	Resources          []v1.GenericMap `json:"resources,omitempty"`
 
-	RuntimeInstallerImage string               `json:"runtimeInstallerImage,omitempty"`
-	RancherInstallerImage string               `json:"rancherInstallerImage,omitempty"`
-	SystemDefaultRegistry string               `json:"systemDefaultRegistry,omitempty"`
-	Registries            *registries.Registry `json:"registries,omitempty"`
+	RuntimeInstallerImage  string               `json:"runtimeInstallerImage,omitempty"`
+	RancherInstallerImage  string               `json:"rancherInstallerImage,omitempty"`
+	SystemDefaultRegistry  string               `json:"systemDefaultRegistry,omitempty"`
+	Registries             *registries.Registry `json:"registries,omitempty"`
+	SkipHarvesterBootstrap bool                 `json:"skipHarvesterBootstrap,omitempty"`
 }
 
 type DiscoveryConfig struct {
