@@ -13,6 +13,7 @@ import (
 	"github.com/harvester/rancherd/cmd/rancherd/resetadmin"
 	"github.com/harvester/rancherd/cmd/rancherd/retry"
 	"github.com/harvester/rancherd/cmd/rancherd/upgrade"
+	"github.com/harvester/rancherd/pkg/watch"
 )
 
 func main() {
@@ -38,4 +39,10 @@ func main() {
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
 	}
+
+	// rancherd now runs as a daemon and watches nodes for upgrade commands
+	if err := watch.Setup(); err != nil {
+		os.Exit(1)
+	}
+
 }
