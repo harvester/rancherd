@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/rancher/system-agent/pkg/applyinator"
-	"golang.org/x/mod/semver"
 
 	"github.com/harvester/rancherd/pkg/cacerts"
 	"github.com/harvester/rancherd/pkg/config"
@@ -13,7 +12,6 @@ import (
 	"github.com/harvester/rancherd/pkg/join"
 	"github.com/harvester/rancherd/pkg/kubectl"
 	"github.com/harvester/rancherd/pkg/probe"
-	"github.com/harvester/rancherd/pkg/rancher"
 	"github.com/harvester/rancherd/pkg/registry"
 	"github.com/harvester/rancherd/pkg/resources"
 	"github.com/harvester/rancherd/pkg/runtime"
@@ -99,60 +97,13 @@ func (p *plan) addInstructions(cfg *config.Config, dataDir string) error {
 		return err
 	}
 
-	rancherVersion, err := versions.RancherVersion(cfg.RancherVersion)
-	if err != nil {
-		return err
-	}
-	if err := p.addInstruction(rancher.ToInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, rancherVersion, dataDir)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(rancher.ToWaitRancherInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(rancher.ToWaitRancherWebhookInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(rancher.ToWaitClusterClientSecretInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	// If clusterrepo check fails, it waits 5 minutes and retries.
-	// Install harvester-cluster-repo deployment before clusterrepo,
-	// so we can avoid the 5 minutes waiting time.
-	if err := p.addInstruction(resources.ToHarvesterClusterRepoInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, dataDir)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(resources.ToWaitHarvesterClusterRepoInstruction(k8sVersion)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(resources.ToInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, dataDir)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(rancher.ToWaitSUCInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	// Rancher added stv-aggregation secret to system-agent-upgrader plan from v2.11.0.
-	// We need to create the secret to make the plan ready.
-	// https://github.com/rancher/rancher/commit/235c2c6a495743dfecafe40b5440fc96b67e2b43
-	if semver.Compare(cfg.RancherVersion, "v2.11.0-alpha") >= 0 {
-		if err := p.addInstruction(rancher.ToCreateStvAggregationSecret(k8sVersion)); err != nil {
+	if !cfg.SkipHarvesterBootstrap {
+		// If clusterrepo check fails, it waits 5 minutes and retries.
+		// Install harvester-cluster-repo deployment before clusterrepo,
+		// so we can avoid the 5 minutes waiting time.
+		if err := p.addInstruction(resources.ToHarvesterClusterRepoInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion, dataDir)); err != nil {
 			return err
 		}
-	}
-
-	if err := p.addInstruction(rancher.ToWaitSUCPlanInstruction(cfg.RancherInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
-	}
-
-	if err := p.addInstruction(runtime.ToWaitKubernetesInstruction(cfg.RuntimeInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-		return err
 	}
 
 	p.addPrePostInstructions(cfg, k8sVersion)
@@ -210,18 +161,15 @@ func (p *plan) addFiles(cfg *config.Config, dataDir string) error {
 		return err
 	}
 
-	// harvester-cluster-repo manifests
-	if err := p.addFile(resources.ToHarvesterClusterRepoFile(resources.GetHarvesterClusterRepoManifests(dataDir))); err != nil {
-		return err
+	if !cfg.SkipHarvesterBootstrap {
+		// harvester-cluster-repo manifests
+		if err := p.addFile(resources.ToHarvesterClusterRepoFile(resources.GetHarvesterClusterRepoManifests(dataDir))); err != nil {
+			return err
+		}
 	}
 
 	// bootstrap manifests
-	if err := p.addFile(resources.ToBootstrapFile(cfg, resources.GetBootstrapManifests(dataDir))); err != nil {
-		return err
-	}
-
-	// rancher values.yaml
-	return p.addFile(rancher.ToFile(cfg, dataDir))
+	return p.addFile(resources.ToBootstrapFile(cfg, resources.GetBootstrapManifests(dataDir)))
 
 }
 

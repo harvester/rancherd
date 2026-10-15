@@ -3,28 +3,15 @@ package plan
 import (
 	"github.com/harvester/rancherd/pkg/config"
 	"github.com/harvester/rancherd/pkg/os"
-	"github.com/harvester/rancherd/pkg/rancher"
 	"github.com/harvester/rancherd/pkg/runtime"
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
 
-func Upgrade(cfg *config.Config, k8sVersion, rancherVersion, rancherOSVersion, dataDir string) (*applyinator.Plan, error) {
+func Upgrade(cfg *config.Config, k8sVersion, rancherOSVersion, dataDir string) (*applyinator.Plan, error) {
 	p := plan{}
 
-	if rancherVersion != "" {
-		if err := p.addInstruction(rancher.ToUpgradeInstruction("", cfg.SystemDefaultRegistry, k8sVersion, rancherVersion, dataDir)); err != nil {
-			return nil, err
-		}
-		if err := p.addInstruction(rancher.ToWaitRancherInstruction("", cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
-			return nil, err
-		}
-	}
-
 	if k8sVersion != "" {
-		if err := p.addInstruction(runtime.ToUpgradeInstruction(k8sVersion)); err != nil {
-			return nil, err
-		}
-		if err := p.addInstruction(runtime.ToWaitKubernetesInstruction("", cfg.SystemDefaultRegistry, k8sVersion)); err != nil {
+		if err := p.addInstruction(runtime.ToUpgradeInstruction(cfg, k8sVersion)); err != nil {
 			return nil, err
 		}
 	}
@@ -34,6 +21,5 @@ func Upgrade(cfg *config.Config, k8sVersion, rancherVersion, rancherOSVersion, d
 			return nil, err
 		}
 	}
-
 	return (*applyinator.Plan)(&p), nil
 }
