@@ -1,9 +1,7 @@
 package cacerts
 
 import (
-	"crypto/hmac"
 	"crypto/sha256"
-	"crypto/sha512"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
@@ -158,10 +156,6 @@ func CACerts(server, token string, clusterToken bool) ([]byte, string, error) {
 		return nil, "", cacertsResponseError(resp.StatusCode, resp.Status, data)
 	}
 
-	if err := checkHMACHeader(resp.Header.Get("X-Cattle-Hash"), token, nonce, data); err != nil {
-		return nil, "", err
-	}
-
 	if len(data) == 0 {
 		return nil, "", nil
 	}
@@ -180,28 +174,6 @@ func cacertsResponseError(statusCode int, status string, data []byte) error {
 			data)
 	}
 	return fmt.Errorf("response %d: %s getting cacerts: %s", statusCode, status, data)
-}
-
-func checkHMACHeader(HMACHeader string, token string, nonce string, data []byte) error {
-	// Since rancher v2.15.0, an authentication failure or empty token results in an empty HMAC header
-	if HMACHeader == "" {
-		return fmt.Errorf(
-			"missing HMAC header in server response: likely token mismatch or incorrect server URL; "+
-				"verify the provided token matches the token on the server node; "+
-				"check token configuration in %s or %s",
-			rke2NodeTokenPath, rancherdConfigPath,
-		)
-	}
-
-	expected := hash(token, nonce, data)
-	if HMACHeader != expected {
-		return fmt.Errorf("HMAC header verification failed: got %s, expected %s; "+
-			"if token configuration is correct, the response may have been tampered with; "+
-			"check token configuration in %s or %s",
-			HMACHeader, expected, rke2NodeTokenPath, rancherdConfigPath)
-	}
-
-	return nil
 }
 
 func ToUpdateCACertificatesInstruction() (*applyinator.OneTimeInstruction, error) {
@@ -235,14 +207,4 @@ func hashHex(token []byte) string {
 func hashBase64(token []byte) string {
 	hash := sha256.Sum256(token)
 	return base64.StdEncoding.EncodeToString(hash[:])
-}
-
-func hash(token, nonce string, bytes []byte) string {
-	digest := hmac.New(sha512.New, []byte(token))
-	digest.Write([]byte(nonce))
-	digest.Write([]byte{0})
-	digest.Write(bytes)
-	digest.Write([]byte{0})
-	hash := digest.Sum(nil)
-	return base64.StdEncoding.EncodeToString(hash)
 }

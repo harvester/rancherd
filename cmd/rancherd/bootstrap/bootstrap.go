@@ -9,7 +9,7 @@ func NewBootstrap() *cobra.Command {
 	b := &Bootstrap{}
 	cmd := &cobra.Command{
 		Use:   "bootstrap",
-		Short: "Run Rancher and Kubernetes bootstrap",
+		Short: "Run Kubernetes bootstrap",
 		RunE:  b.Run,
 	}
 

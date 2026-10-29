@@ -1,13 +1,11 @@
 package runtime
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/harvester/rancherd/pkg/config"
 	"github.com/harvester/rancherd/pkg/images"
-	"github.com/harvester/rancherd/pkg/kubectl"
 	"github.com/harvester/rancherd/pkg/self"
 	"github.com/rancher/system-agent/pkg/applyinator"
 )
@@ -24,24 +22,101 @@ func ToInstruction(imageOverride string, systemDefaultRegistry string, k8sVersio
 	return instruction, nil
 }
 
-func ToUpgradeInstruction(k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+func ToUpgradeInstruction(cfg *config.Config, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	instruction, err := ToInstruction(cfg.RuntimeInstallerImage, cfg.SystemDefaultRegistry, k8sVersion)
+	if err != nil {
+		return nil, err
+	}
+	return instruction, nil
+}
+
+func ToJoinInstruction(imageOverride string, systemDefaultRegistry string, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	runtime := config.GetRuntime(k8sVersion)
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = string(runtime)
+	instruction.Env = []string{
+		"RESTART_STAMP=" + images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion),
+		"INSTALL_RKE2_TYPE=agent",
+	}
+	instruction.Image = images.GetInstallerImage(imageOverride, systemDefaultRegistry, k8sVersion)
+	instruction.SaveOutput = true
+	return instruction, nil
+}
+
+func ToStartRKE2Agent(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
 	cmd, err := self.Self()
 	if err != nil {
 		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
 	}
-	patch, err := json.Marshal(map[string]interface{}{
-		"spec": map[string]interface{}{
-			"kubernetesVersion": k8sVersion,
-		},
-	})
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "start-agent"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", "systemctl", "start", "rke2-agent"}
+	instruction.Command = cmd
+	return instruction, nil
+}
+
+func ToEnableRKE2Agent(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	cmd, err := self.Self()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
 	}
 	instruction := &applyinator.OneTimeInstruction{}
-	instruction.Name = "patch-kubernetes-version"
+	instruction.Name = "enable-agent"
 	instruction.SaveOutput = true
-	instruction.Args = []string{"retry", kubectl.Command(k8sVersion), "--type=merge", "-n", "fleet-local", "patch", "clusters.provisioning.cattle.io", "local", "-p", string(patch)}
-	instruction.Env = kubectl.Env(k8sVersion)
+	instruction.Args = []string{"retry", "systemctl", "enable", "rke2-agent"}
+	instruction.Command = cmd
+	return instruction, nil
+}
+
+func ToDisableRKE2Agent(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "disable-agent"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", "systemctl", "disable", "rke2-agent"}
+	instruction.Command = cmd
+	return instruction, nil
+}
+
+func ToStopRKE2Agent(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "stop-agent"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", "systemctl", "stop", "rke2-agent"}
+	instruction.Command = cmd
+	return instruction, nil
+}
+
+func ToEnableRKE2Server(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "enable-server"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", "systemctl", "enable", "rke2-server"}
+	instruction.Command = cmd
+	return instruction, nil
+}
+
+func ToStartRKE2Server(_, _, k8sVersion string) (*applyinator.OneTimeInstruction, error) {
+	cmd, err := self.Self()
+	if err != nil {
+		return nil, fmt.Errorf("resolving location of %s: %w", os.Args[0], err)
+	}
+	instruction := &applyinator.OneTimeInstruction{}
+	instruction.Name = "start-server"
+	instruction.SaveOutput = true
+	instruction.Args = []string{"retry", "systemctl", "start", "rke2-server"}
 	instruction.Command = cmd
 	return instruction, nil
 }

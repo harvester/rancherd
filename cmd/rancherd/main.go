@@ -10,6 +10,7 @@ import (
 	"github.com/harvester/rancherd/cmd/rancherd/gettpmhash"
 	"github.com/harvester/rancherd/cmd/rancherd/info"
 	"github.com/harvester/rancherd/cmd/rancherd/probe"
+	"github.com/harvester/rancherd/cmd/rancherd/promote"
 	"github.com/harvester/rancherd/cmd/rancherd/resetadmin"
 	"github.com/harvester/rancherd/cmd/rancherd/retry"
 	"github.com/harvester/rancherd/cmd/rancherd/upgrade"
@@ -33,6 +34,7 @@ func main() {
 		upgrade.NewUpgrade(),
 		info.NewInfo(),
 		gettpmhash.NewGetTPMHash(),
+		promote.NewPromote(),
 	)
 
 	if err := root.Execute(); err != nil {
